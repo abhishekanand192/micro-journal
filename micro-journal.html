@@ -435,6 +435,61 @@
     .bnav-dot    { width: 4px; height: 4px; border-radius: 50%; background: var(--blue); opacity: 0; }
     .bnav.active .bnav-dot { opacity: 1; }
 
+    /* ── Library tab ──────────────────────────── */
+    .lib-section {
+      padding: 14px 16px 6px;
+      font-size: 12px; font-weight: 700;
+      color: var(--sub); text-transform: uppercase; letter-spacing: 0.8px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .lib-section span { font-size: 13px; font-weight: 500; color: var(--muted); text-transform: none; letter-spacing: 0; }
+
+    /* Media grid */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+    }
+    .media-cell {
+      aspect-ratio: 1; overflow: hidden;
+      cursor: pointer; background: var(--bg-dim);
+    }
+    .media-cell img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: opacity 0.15s;
+    }
+    .media-cell:hover img { opacity: 0.8; }
+    .media-empty {
+      padding: 40px 32px; text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .media-empty svg { width: 40px; height: 40px; fill: var(--border); margin-bottom: 12px; }
+    .media-empty-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .media-empty-sub   { font-size: 14px; color: var(--sub); line-height: 1.5; }
+
+    /* Features grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px; padding: 14px 16px 20px;
+    }
+    .feat-card {
+      background: var(--bg-dim); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px 14px;
+      transition: background 0.12s;
+    }
+    .feat-card:hover { background: var(--border); }
+    .feat-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px;
+    }
+    .feat-icon svg  { width: 18px; height: 18px; fill: #fff; }
+    .feat-title     { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .feat-desc      { font-size: 12px; color: var(--sub); line-height: 1.45; }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -523,6 +578,79 @@
       <div class="section-title">Favorites</div>
       <div class="feed" id="feed-favorites"></div>
     </div>
+
+    <!-- LIBRARY (Media + Features) -->
+    <div class="view" id="view-library">
+
+      <div class="lib-section">
+        Media
+        <span id="media-count"></span>
+      </div>
+      <div id="media-grid-wrap"></div>
+
+      <div class="lib-section" style="margin-top:4px">
+        Features
+      </div>
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#1d9bf0">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </div>
+          <div class="feat-title">Write & Post</div>
+          <div class="feat-desc">Capture moments up to 400 characters with a live ring counter.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#794bc4">
+            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          </div>
+          <div class="feat-title">Photo Attachments</div>
+          <div class="feat-desc">Attach up to 2 photos per entry. Tap any photo to view fullscreen.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#f91880">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="feat-title">Favorites</div>
+          <div class="feat-desc">Heart any entry to pin it. Find them instantly in the Favorites tab.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#00ba7c">
+            <svg viewBox="0 0 24 24"><path d="M1.75 1.5h20.5c.69 0 1.25.56 1.25 1.25v13.5c0 .69-.56 1.25-1.25 1.25H6.56l-4.31 3.44V2.75c0-.69.56-1.25 1.25-1.25zm.75 1.5v14.76l2.94-2.35.31-.25H21.5V3H2.5z"/></svg>
+          </div>
+          <div class="feat-title">Comments</div>
+          <div class="feat-desc">Add private notes to any entry. All for your eyes only.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#ff7a00">
+            <svg viewBox="0 0 24 24"><path d="M21.53 20.47l-4.42-4.42A8 8 0 1 0 15.54 17.6l4.42 4.42a.75.75 0 1 0 1.07-1.06zM4 10a6 6 0 1 1 12 0A6 6 0 0 1 4 10z"/></svg>
+          </div>
+          <div class="feat-title">Search & Filter</div>
+          <div class="feat-desc">Full-text search plus a month/year picker to find any moment fast.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#536471">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </div>
+          <div class="feat-title">Edit & Delete</div>
+          <div class="feat-desc">Tap ··· on any entry to edit inline or remove it permanently.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#7c6af7">
+            <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+          </div>
+          <div class="feat-title">Dark Mode</div>
+          <div class="feat-desc">Toggle a full dark theme anytime from the Profile tab.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#f5a623">
+            <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+          </div>
+          <div class="feat-title">Media Grid</div>
+          <div class="feat-desc">Every photo you've attached lives here in a browsable grid.</div>
+        </div>
+      </div>
+
+    </div><!-- /view-library -->
 
     <!-- PROFILE -->
     <div class="view" id="view-profile">
@@ -634,6 +762,11 @@
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       <div class="bnav-dot"></div>
     </div>
+    <!-- Library (history icon) -->
+    <div class="bnav" id="bnav-library" onclick="switchView('library')">
+      <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 9-9 9 9 0 0 0-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+      <div class="bnav-dot"></div>
+    </div>
     <div class="bnav" id="bnav-profile" onclick="switchView('profile')">
       <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v1H4v-1c0-1.33 2.67-4 8-4z"/></svg>
       <div class="bnav-dot"></div>
@@ -679,7 +812,7 @@ function setAvatars() {
 const MAX = 400;
 const CIRC = 2 * Math.PI * 9.5;
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const VIEW_TITLES = { home:"Today's Joy", search:'Search', favorites:'Favorites', profile:'Profile' };
+const VIEW_TITLES = { home:"Today's Joy", search:'Search', favorites:'Favorites', library:'Library', profile:'Profile' };
 
 // ── State ──────────────────────────────────────────────
 let openMenu     = null;
@@ -886,12 +1019,39 @@ function renderProfileStats() {
     <div class="stat-item"><div class="stat-num">${days}</div><div class="stat-label">Days</div></div>`;
 }
 
+function renderLibrary() {
+  const allMedia = [];
+  entries.forEach((e, ei) => e.attachments.forEach((src, ai) => allMedia.push({ src, ei, ai })));
+
+  const countEl = byId('media-count');
+  if (countEl) countEl.textContent = allMedia.length ? `${allMedia.length} photo${allMedia.length > 1 ? 's' : ''}` : '';
+
+  const wrap = byId('media-grid-wrap');
+  if (!wrap) return;
+  if (!allMedia.length) {
+    wrap.innerHTML = `
+      <div class="media-empty">
+        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        <div class="media-empty-title">No photos yet</div>
+        <div class="media-empty-sub">Attach photos to your entries and they'll all appear here in a grid.</div>
+      </div>`;
+    return;
+  }
+  wrap.innerHTML = `<div class="media-grid">
+    ${allMedia.map(m => `
+      <div class="media-cell" onclick="openOverlay(${m.ei},${m.ai})">
+        <img src="${m.src}" alt="">
+      </div>`).join('')}
+  </div>`;
+}
+
 function renderAll() {
   renderHome();
   renderFavorites();
   renderSearch();
   renderMonthGrid();
   renderProfileStats();
+  renderLibrary();
 }
 
 // ── Three-dots menu ────────────────────────────────────
@@ -1049,6 +1209,7 @@ function switchView(view) {
   byId('topnav-title').textContent = VIEW_TITLES[view];
   if (view === 'favorites') renderFavorites();
   if (view === 'search')  { renderMonthGrid(); renderSearch(); }
+  if (view === 'library') renderLibrary();
   if (view === 'profile') renderProfileStats();
 }
 
