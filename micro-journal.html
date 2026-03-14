@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Micro-Journal</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #ffffff;
+      --bg-dim:  #f7f9f9;
+      --border:  #eff3f4;
+      --blue:    #1d9bf0;
+      --blue-dk: #1a8cd8;
+      --text:    #0f1419;
+      --sub:     #536471;
+      --muted:   #8899a6;
+      --red:     #f4212e;
+      --heart:   #f91880;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: #e7ecef;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+    }
+
+    /* ── Phone ────────────────────────────────── */
+    .phone {
+      width: 390px; min-height: 844px;
+      margin: 32px auto;
+      background: var(--bg);
+      border-radius: 44px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.18),
+                  0 0 0 10px #1a1a1a, 0 0 0 12px #2a2a2a;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Dark mode ────────────────────────────── */
+    .phone.dark {
+      --bg:     #15202b;
+      --bg-dim: #1e2d3d;
+      --border: #2f3f4f;
+      --text:   #f7f9f9;
+      --sub:    #8899a6;
+      --muted:  #5c7080;
+    }
+
+    /* ── Status bar ───────────────────────────── */
+    .statusbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 26px 6px; flex-shrink: 0;
+    }
+    .statusbar .time { font-size: 15px; font-weight: 700; color: var(--text); }
+    .statusbar .icons { display: flex; gap: 5px; align-items: center; }
+    .statusbar svg { width: 15px; height: 15px; fill: var(--text); }
+
+    /* ── Top nav ──────────────────────────────── */
+    .topnav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 16px; border-bottom: 1px solid var(--border);
+      flex-shrink: 0; z-index: 10;
+      background: var(--bg);
+    }
+    .topnav-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .topnav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .topnav-title { font-size: 17px; font-weight: 700; color: var(--text); }
+
+    /* ── Body ─────────────────────────────────── */
+    .body { flex: 1; overflow-y: auto; scrollbar-width: none; }
+    .body::-webkit-scrollbar { display: none; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── Compose ──────────────────────────────── */
+    .compose {
+      display: flex; gap: 12px;
+      padding: 12px 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .compose-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      overflow: hidden; flex-shrink: 0; margin-top: 2px;
+    }
+    .compose-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .compose-right { flex: 1; min-width: 0; }
+    .compose-textarea {
+      width: 100%; min-height: 80px;
+      border: none; outline: none; resize: none;
+      font-size: 20px; font-family: inherit;
+      color: var(--text); line-height: 1.5;
+      background: transparent; padding: 4px 0 0;
+    }
+    .compose-textarea::placeholder { color: var(--muted); font-size: 20px; }
+    .compose-footer {
+      display: flex; align-items: center;
+      justify-content: flex-end;
+      padding: 10px 0 12px; gap: 12px;
+    }
+    .char-ring { width: 24px; height: 24px; flex-shrink: 0; }
+    .char-ring circle { fill: none; stroke-width: 2.4; transition: stroke-dashoffset 0.2s, stroke 0.2s; }
+    .ring-bg { stroke: var(--border); }
+    .ring-fg { stroke: var(--blue); stroke-linecap: round; }
+    .char-rem-text { font-size: 11px; font-weight: 600; fill: var(--sub); dominant-baseline: middle; text-anchor: middle; }
+    .post-btn {
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 9999px;
+      padding: 8px 18px; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s; font-family: inherit;
+    }
+    .post-btn:hover { background: var(--blue-dk); }
+    .post-btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* ── Feed ─────────────────────────────────── */
+    .feed { display: flex; flex-direction: column; }
+
+    /* ── Entry ────────────────────────────────── */
+    .entry {
+      display: flex; gap: 12px;
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    .entry-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      overflow: hidden; flex-shrink: 0; align-self: flex-start;
+    }
+    .entry-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .entry-right { flex: 1; min-width: 0; }
+    .entry-header {
+      display: flex; align-items: center;
+      gap: 5px; margin-bottom: 3px;
+    }
+    .entry-name  { font-size: 15px; font-weight: 700; color: var(--text); }
+    .entry-handle, .entry-dot, .entry-time { font-size: 14px; color: var(--sub); }
+    .entry-body-text {
+      font-size: 15px; line-height: 1.55;
+      color: var(--text); word-break: break-word;
+    }
+
+    /* Three-dots menu */
+    .entry-menu-wrap {
+      margin-left: auto; position: relative; flex-shrink: 0;
+    }
+    .dots-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--sub); transition: background 0.12s, color 0.12s;
+    }
+    .dots-btn:hover { background: rgba(29,155,240,0.1); color: var(--blue); }
+    .dots-btn svg { width: 18px; height: 18px; fill: currentColor; }
+    .entry-dropdown {
+      position: absolute; right: 0; top: calc(100% + 2px);
+      background: var(--bg); border-radius: 14px;
+      box-shadow: 0 4px 28px rgba(0,0,0,0.18), 0 0 0 1px var(--border);
+      min-width: 140px; z-index: 50; overflow: hidden;
+      animation: popIn 0.12s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.92) translateY(-4px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .dd-item {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 13px 16px;
+      border: none; background: none; cursor: pointer;
+      font-size: 15px; font-family: inherit; color: var(--text);
+      text-align: left; transition: background 0.12s;
+    }
+    .dd-item:hover { background: var(--bg-dim); }
+    .dd-item svg   { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+    .dd-item.danger { color: var(--red); }
+
+    /* Inline edit */
+    .entry-edit-ta {
+      width: 100%; margin-top: 4px;
+      border: 1.5px solid var(--blue); border-radius: 10px;
+      padding: 10px 12px; font-size: 15px; font-family: inherit;
+      color: var(--text); background: var(--bg);
+      line-height: 1.55; resize: none; outline: none;
+    }
+    .entry-edit-actions {
+      display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end;
+    }
+    .edit-save-btn {
+      background: var(--blue); color: #fff; border: none;
+      border-radius: 9999px; padding: 6px 16px;
+      font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .edit-cancel-btn {
+      background: none; color: var(--sub);
+      border: 1.5px solid var(--border); border-radius: 9999px;
+      padding: 6px 14px; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
+
+    /* Attachments */
+    .entry-attachments { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .attach-thumb {
+      width: 96px; height: 80px; border-radius: 10px;
+      object-fit: cover; cursor: pointer;
+      border: 1px solid var(--border); transition: opacity 0.12s;
+    }
+    .attach-thumb:hover { opacity: 0.85; }
+
+    /* Action row */
+    .entry-actions {
+      display: flex; gap: 28px; margin-top: 10px; align-items: center;
+    }
+    .ea {
+      display: flex; align-items: center; gap: 5px;
+      color: var(--sub); font-size: 13px;
+      border: none; background: none; padding: 0;
+      cursor: pointer; font-family: inherit;
+      transition: color 0.12s; user-select: none;
+    }
+    .ea:hover     { color: var(--blue); }
+    .ea svg       { width: 18px; height: 18px; fill: currentColor; flex-shrink: 0; }
+    .ea.cmt-open  { color: var(--blue); }
+    .ea.heart-on  { color: var(--heart); }
+    .ea.heart-on:hover { color: #c9136a; }
+    .ea.att-full  { color: var(--muted); cursor: default; pointer-events: none; }
+    .ea-label     { font-size: 13px; }
+
+    /* Comments */
+    .cmt-section { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .cmt-item    { display: flex; gap: 8px; margin-bottom: 10px; }
+    .cmt-avatar  { width: 26px; height: 26px; border-radius: 50%; overflow: hidden; flex-shrink: 0; margin-top: 1px; }
+    .cmt-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .cmt-text    { font-size: 14px; line-height: 1.45; color: var(--text); }
+    .cmt-time    { font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .cmt-input-row { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+    .cmt-input-av  { width: 26px; height: 26px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+    .cmt-input-av img { width: 100%; height: 100%; object-fit: cover; }
+    .cmt-input {
+      flex: 1; border: 1px solid var(--border); border-radius: 9999px;
+      padding: 7px 14px; font-size: 14px; outline: none;
+      font-family: inherit; background: var(--bg-dim); color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .cmt-input:focus { border-color: var(--blue); background: var(--bg); }
+    .cmt-send {
+      background: var(--blue); color: #fff; border: none;
+      border-radius: 9999px; padding: 7px 14px;
+      font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+
+    /* ── Search ───────────────────────────────── */
+    .search-sticky {
+      position: sticky; top: 0; z-index: 5;
+      background: var(--bg); padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg-dim); border-radius: 9999px;
+      padding: 9px 16px; border: 1.5px solid transparent;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .search-bar:focus-within { border-color: var(--blue); background: var(--bg); }
+    .search-bar svg { width: 17px; height: 17px; fill: var(--sub); flex-shrink: 0; }
+    .search-bar input {
+      flex: 1; border: none; background: none; outline: none;
+      font-size: 15px; font-family: inherit; color: var(--text);
+    }
+    .search-bar input::placeholder { color: var(--sub); }
+    .search-clear {
+      background: none; border: none; cursor: pointer;
+      color: var(--sub); font-size: 18px; line-height: 1; padding: 0; display: none;
+    }
+    .month-picker { padding: 14px 16px 12px; }
+    .year-nav {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 12px;
+    }
+    .year-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 1.5px solid var(--border); background: none;
+      font-size: 18px; cursor: pointer; color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.12s; font-family: inherit;
+    }
+    .year-btn:hover { background: var(--bg-dim); }
+    .year-label { font-size: 16px; font-weight: 700; color: var(--text); }
+    .month-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .month-btn {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 8px 4px; text-align: center;
+      font-size: 13px; font-weight: 500; color: var(--sub);
+      cursor: pointer; background: var(--bg); font-family: inherit;
+      transition: all 0.12s;
+    }
+    .month-btn:hover    { border-color: var(--blue); color: var(--blue); }
+    .month-btn.has-data { color: var(--text); font-weight: 700; }
+    .month-btn.selected { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .search-divider { height: 1px; background: var(--border); }
+
+    /* ── Favorites header ─────────────────────── */
+    .section-title {
+      padding: 16px 16px 10px; font-size: 20px; font-weight: 800;
+      border-bottom: 1px solid var(--border); color: var(--text);
+    }
+
+    /* ── Profile ──────────────────────────────── */
+    .profile-header {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 24px 20px 20px; border-bottom: 1px solid var(--border);
+    }
+    .profile-pic {
+      width: 72px; height: 72px; border-radius: 50%;
+      overflow: hidden; margin-bottom: 12px;
+      border: 3px solid var(--border);
+    }
+    .profile-pic img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name   { font-size: 20px; font-weight: 800; color: var(--text); }
+    .profile-handle { font-size: 15px; color: var(--sub); margin-top: 2px; }
+    .profile-bio    {
+      font-size: 15px; color: var(--text); margin-top: 8px;
+      text-align: center; line-height: 1.5;
+    }
+    .profile-joined { font-size: 13px; color: var(--sub); margin-top: 6px; }
+
+    .profile-stats {
+      display: flex; border-bottom: 1px solid var(--border);
+    }
+    .stat-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      padding: 16px 8px; border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num   { font-size: 22px; font-weight: 800; color: var(--text); }
+    .stat-label { font-size: 12px; color: var(--sub); margin-top: 2px; font-weight: 500; }
+
+    .settings-section { padding: 0; }
+    .settings-group-label {
+      padding: 16px 16px 6px;
+      font-size: 12px; font-weight: 700;
+      color: var(--sub); text-transform: uppercase; letter-spacing: 0.8px;
+    }
+    .settings-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.12s;
+    }
+    .settings-item:hover { background: var(--bg-dim); }
+    .settings-item:last-child { border-bottom: none; }
+    .si-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .si-icon svg { width: 18px; height: 18px; fill: #fff; }
+    .si-text  { flex: 1; }
+    .si-label { font-size: 15px; font-weight: 600; color: var(--text); }
+    .si-sub   { font-size: 13px; color: var(--sub); margin-top: 1px; }
+    .si-right { color: var(--muted); font-size: 13px; font-weight: 500; }
+    .si-arrow svg { width: 16px; height: 16px; fill: var(--muted); }
+
+    /* Toggle switch */
+    .toggle {
+      width: 44px; height: 26px; border-radius: 13px;
+      background: #ccd6dd; flex-shrink: 0;
+      position: relative; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .phone.dark .toggle.dark-toggle { background: var(--blue); }
+    .toggle.tog-on { background: var(--blue); }
+    .toggle::after {
+      content: ''; position: absolute;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #fff; top: 2px; left: 2px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle.tog-on::after,
+    .phone.dark .toggle.dark-toggle::after { transform: translateX(18px); }
+
+    /* Logout */
+    .logout-btn {
+      display: block; width: calc(100% - 32px); margin: 16px;
+      padding: 14px; border: 1.5px solid var(--border); border-radius: 12px;
+      background: none; font-size: 15px; font-weight: 600;
+      color: var(--red); cursor: pointer; font-family: inherit;
+      transition: background 0.12s;
+    }
+    .logout-btn:hover { background: rgba(244,33,46,0.06); }
+
+    /* ── Empty state ──────────────────────────── */
+    .empty { padding: 52px 32px; text-align: center; }
+    .empty-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+    .empty-sub   { font-size: 15px; color: var(--sub); line-height: 1.5; }
+
+    /* ── Image overlay ────────────────────────── */
+    .img-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none; align-items: center; justify-content: center;
+      z-index: 500; cursor: pointer;
+    }
+    .img-overlay.open { display: flex; }
+    .img-overlay img { max-width: 92%; max-height: 90vh; border-radius: 12px; }
+
+    /* ── Toast ────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 100px; left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: var(--blue); color: #fff;
+      padding: 11px 20px; border-radius: 9999px;
+      font-size: 14px; font-weight: 600;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s, transform 0.22s; z-index: 400;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Bottom nav ───────────────────────────── */
+    .bottomnav {
+      display: flex; border-top: 1px solid var(--border);
+      background: var(--bg); padding: 8px 0 22px; flex-shrink: 0;
+    }
+    .bnav {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 3px; padding: 6px 0;
+      cursor: pointer; color: var(--sub); transition: color 0.12s;
+    }
+    .bnav.active { color: var(--text); }
+    .bnav svg    { width: 24px; height: 24px; fill: currentColor; }
+    .bnav-dot    { width: 4px; height: 4px; border-radius: 50%; background: var(--blue); opacity: 0; }
+    .bnav.active .bnav-dot { opacity: 1; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-5px); }
+      40%      { transform: translateX(5px); }
+      60%      { transform: translateX(-3px); }
+      80%      { transform: translateX(3px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="attach-input" accept="image/*" style="display:none" onchange="handleAttach(event)">
+<div class="img-overlay" id="img-overlay" onclick="closeOverlay()">
+  <img id="overlay-img" src="" alt="">
+</div>
+
+<div class="phone" id="phone">
+
+  <div class="statusbar">
+    <span class="time" id="status-time">9:41</span>
+    <div class="icons">
+      <svg viewBox="0 0 24 24"><rect x="2" y="14" width="3" height="6" rx="1"/><rect x="7" y="10" width="3" height="10" rx="1"/><rect x="12" y="6" width="3" height="14" rx="1"/><rect x="17" y="2" width="3" height="18" rx="1" opacity=".3"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 18a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zm0-4.5a6 6 0 0 1 4.24 1.76l-1.42 1.41A4 4 0 0 0 8.18 16.67L6.76 15.26A6 6 0 0 1 12 13.5zm0-4.5a10.5 10.5 0 0 1 7.42 3.08l-1.41 1.41A8.5 8.5 0 0 0 3 13.49l-1.41-1.41A10.5 10.5 0 0 1 12 9z"/></svg>
+      <svg viewBox="0 0 24 24"><rect x="1" y="7" width="18" height="10" rx="2.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="9" width="12" height="6" rx="1.5"/><path d="M20 10.5v3a1.5 1.5 0 0 0 0-3z"/></svg>
+    </div>
+  </div>
+
+  <div class="topnav">
+    <div class="topnav-avatar"><img id="nav-avatar" src="" alt=""></div>
+    <span class="topnav-title" id="topnav-title">Today's Joy</span>
+    <div style="width:32px"></div>
+  </div>
+
+  <div class="body" id="body">
+
+    <!-- HOME -->
+    <div class="view active" id="view-home">
+      <div class="compose">
+        <div class="compose-avatar"><img id="compose-avatar" src="" alt=""></div>
+        <div class="compose-right">
+          <textarea class="compose-textarea" id="compose-text" maxlength="400"
+            placeholder="What made you happy today?" oninput="onInput()"></textarea>
+          <div class="compose-footer">
+            <svg class="char-ring" viewBox="0 0 24 24">
+              <circle class="ring-bg" cx="12" cy="12" r="9.5"/>
+              <circle class="ring-fg" id="ring-fg" cx="12" cy="12" r="9.5"
+                stroke-dasharray="59.69" stroke-dashoffset="59.69"
+                transform="rotate(-90 12 12)"/>
+              <text class="char-rem-text" id="char-rem" x="12" y="12.5"></text>
+            </svg>
+            <button class="post-btn" id="post-btn" onclick="post()" disabled>Post</button>
+          </div>
+        </div>
+      </div>
+      <div class="feed" id="feed-home"></div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="view" id="view-search">
+      <div class="search-sticky">
+        <div class="search-bar">
+          <svg viewBox="0 0 24 24"><path d="M21.53 20.47l-4.42-4.42A8 8 0 1 0 15.54 17.6l4.42 4.42a.75.75 0 1 0 1.07-1.06zM4 10a6 6 0 1 1 12 0A6 6 0 0 1 4 10z"/></svg>
+          <input type="text" id="search-input" placeholder="Search your moments…" oninput="onSearch()">
+          <button class="search-clear" id="search-clear" onclick="clearSearch()">×</button>
+        </div>
+      </div>
+      <div class="month-picker">
+        <div class="year-nav">
+          <button class="year-btn" onclick="changeYear(-1)">‹</button>
+          <span class="year-label" id="year-label"></span>
+          <button class="year-btn" onclick="changeYear(1)">›</button>
+        </div>
+        <div class="month-grid" id="month-grid"></div>
+      </div>
+      <div class="search-divider"></div>
+      <div class="feed" id="feed-search"></div>
+    </div>
+
+    <!-- FAVORITES -->
+    <div class="view" id="view-favorites">
+      <div class="section-title">Favorites</div>
+      <div class="feed" id="feed-favorites"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="view" id="view-profile">
+
+      <div class="profile-header">
+        <div class="profile-pic"><img id="profile-pic" src="" alt="Profile"></div>
+        <div class="profile-name">Alex Chen</div>
+        <div class="profile-handle">@journal</div>
+        <div class="profile-bio">Finding joy in the small moments, one entry at a time.</div>
+        <div class="profile-joined">Joined March 2024</div>
+      </div>
+
+      <div class="profile-stats" id="profile-stats">
+        <!-- injected by JS -->
+      </div>
+
+      <div class="settings-section">
+
+        <div class="settings-group-label">Preferences</div>
+
+        <div class="settings-item" onclick="toggleDark()">
+          <div class="si-icon" style="background:#1d9bf0">
+            <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-label">Dark Mode</div>
+            <div class="si-sub">Easier on the eyes at night</div>
+          </div>
+          <div class="toggle dark-toggle" id="dark-toggle"></div>
+        </div>
+
+        <div class="settings-item" onclick="this.querySelector('.toggle').classList.toggle('tog-on')">
+          <div class="si-icon" style="background:#794bc4">
+            <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-label">Notifications</div>
+            <div class="si-sub">Daily journaling reminders</div>
+          </div>
+          <div class="toggle" id="notif-toggle"></div>
+        </div>
+
+        <div class="settings-item" onclick="this.querySelector('.toggle').classList.toggle('tog-on')">
+          <div class="si-icon" style="background:#00ba7c">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-label">Daily Reminder</div>
+            <div class="si-sub">Remind me every evening at 9 PM</div>
+          </div>
+          <div class="toggle tog-on"></div>
+        </div>
+
+        <div class="settings-group-label">Data</div>
+
+        <div class="settings-item" onclick="showToast('Export coming soon')">
+          <div class="si-icon" style="background:#ff7a00">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-label">Export Journal</div>
+            <div class="si-sub">Save as PDF or plain text</div>
+          </div>
+          <div class="si-arrow"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+
+        <div class="settings-item" onclick="showToast('Privacy settings coming soon')">
+          <div class="si-icon" style="background:#536471">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-label">Privacy &amp; Data</div>
+            <div class="si-sub">Your journal is stored locally</div>
+          </div>
+          <div class="si-arrow"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+
+        <div class="settings-group-label">About</div>
+
+        <div class="settings-item">
+          <div class="si-icon" style="background:#f5a623">
+            <svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>
+          </div>
+          <div class="si-text">
+            <div class="si-label">About</div>
+            <div class="si-sub">Micro-Journal · Personal edition</div>
+          </div>
+          <div class="si-right">v1.0.0</div>
+        </div>
+
+      </div>
+
+      <button class="logout-btn" onclick="showToast('Signed out')">Sign Out</button>
+
+    </div><!-- /view-profile -->
+
+  </div><!-- /body -->
+
+  <div class="bottomnav">
+    <div class="bnav active" id="bnav-home" onclick="switchView('home')">
+      <svg viewBox="0 0 24 24"><path d="M12 1.7L1 11.5h3V22h6v-7h4v7h6V11.5h3L12 1.7z"/></svg>
+      <div class="bnav-dot"></div>
+    </div>
+    <div class="bnav" id="bnav-search" onclick="switchView('search')">
+      <svg viewBox="0 0 24 24"><path d="M21.53 20.47l-4.42-4.42A8 8 0 1 0 15.54 17.6l4.42 4.42a.75.75 0 1 0 1.07-1.06zM4 10a6 6 0 1 1 12 0A6 6 0 0 1 4 10z"/></svg>
+      <div class="bnav-dot"></div>
+    </div>
+    <div class="bnav" id="bnav-favorites" onclick="switchView('favorites')">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <div class="bnav-dot"></div>
+    </div>
+    <div class="bnav" id="bnav-profile" onclick="switchView('profile')">
+      <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v1H4v-1c0-1.33 2.67-4 8-4z"/></svg>
+      <div class="bnav-dot"></div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+// ── Avatar (inline SVG, no network) ───────────────────
+const AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="bgG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c6af7"/>
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="50" fill="url(#bgG)"/>
+  <circle cx="50" cy="39" r="18" fill="#fcd5b5"/>
+  <path d="M16 92 Q16 68 50 68 Q84 68 84 92Z" fill="#fcd5b5"/>
+  <path d="M82 92 Q82 74 50 74 Q18 74 18 92Z" fill="#8b7cf6"/>
+  <path d="M32 36 Q32 18 50 18 Q68 18 68 36 Q65 26 50 26 Q35 26 32 36Z" fill="#2d1b0e"/>
+  <path d="M28 38 Q29 32 32 36" stroke="#2d1b0e" stroke-width="2.5" fill="none"/>
+  <path d="M72 38 Q71 32 68 36" stroke="#2d1b0e" stroke-width="2.5" fill="none"/>
+  <ellipse cx="43" cy="40" rx="3" ry="3.5" fill="#1a0a00"/>
+  <ellipse cx="57" cy="40" rx="3" ry="3.5" fill="#1a0a00"/>
+  <circle cx="44.5" cy="38.5" r="1.2" fill="rgba(255,255,255,0.7)"/>
+  <circle cx="58.5" cy="38.5" r="1.2" fill="rgba(255,255,255,0.7)"/>
+  <path d="M44 48 Q50 54 56 48" stroke="#c07060" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+const AVATAR_URI = 'data:image/svg+xml;base64,' + btoa(AVATAR_SVG);
+
+function setAvatars() {
+  document.querySelectorAll('[data-avatar]').forEach(el => { el.src = AVATAR_URI; });
+  ['nav-avatar','compose-avatar','profile-pic'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.src = AVATAR_URI;
+  });
+}
+
+// ── Constants ──────────────────────────────────────────
+const MAX = 400;
+const CIRC = 2 * Math.PI * 9.5;
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const VIEW_TITLES = { home:"Today's Joy", search:'Search', favorites:'Favorites', profile:'Profile' };
+
+// ── State ──────────────────────────────────────────────
+let openMenu     = null;
+let attachTarget = null;
+let searchYear   = new Date().getFullYear();
+let searchMonth  = null;
+let darkMode     = false;
+
+// ── Entry factory ──────────────────────────────────────
+let _uid = 0;
+function mkEntry(text, ts, opts = {}) {
+  return {
+    id: _uid++, text, ts,
+    favorited:   opts.favorited   || false,
+    comments:    opts.comments    || [],
+    attachments: opts.attachments || [],
+    commentOpen: false,
+    editing:     false,
+  };
+}
+function ago(days, hour) {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  d.setHours(hour, 0, 0, 0);
+  return d;
+}
+
+const entries = [
+  mkEntry("That first sip of coffee while the house was still quiet. Pure bliss.",          ago(0,14)),
+  mkEntry("My dog did that thing where she tilts her head trying to understand me. Melted.", ago(1, 9), { favorited:true }),
+  mkEntry("Nailed the presentation at work. Three months of prep, twenty minutes, no slip.", ago(2,11)),
+  mkEntry("Made ramen from scratch. Six hours of effort, zero regrets.",                     ago(3,19)),
+  mkEntry("Evening walk in the park. The leaves were golden and the light was exactly right.",ago(4,17), { favorited:true }),
+];
+
+// ── Helpers ────────────────────────────────────────────
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmtTime(d) {
+  const now = new Date(), diff = Math.floor((now - d) / 1000);
+  if (diff < 60)    return diff + 's';
+  if (diff < 3600)  return Math.floor(diff / 60) + 'm';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h';
+  const o = { month:'short', day:'numeric' };
+  if (d.getFullYear() !== now.getFullYear()) o.year = 'numeric';
+  return d.toLocaleDateString('en-US', o);
+}
+function byId(id) { return document.getElementById(id); }
+
+// ── Entry HTML ─────────────────────────────────────────
+function entryHTML(e, delay) {
+  const idx = entries.indexOf(e);
+
+  const thumbsHTML = e.attachments.length
+    ? `<div class="entry-attachments">${e.attachments.map((src, ai) =>
+        `<img class="attach-thumb" src="${src}" onclick="openOverlay(${idx},${ai})">`).join('')}</div>`
+    : '';
+
+  const cmtsHTML = e.commentOpen ? `
+    <div class="cmt-section">
+      ${e.comments.map(c => `
+        <div class="cmt-item">
+          <div class="cmt-avatar"><img src="${AVATAR_URI}" alt=""></div>
+          <div>
+            <div class="cmt-text">${esc(c.text)}</div>
+            <div class="cmt-time">${fmtTime(c.ts)}</div>
+          </div>
+        </div>`).join('')}
+      <div class="cmt-input-row">
+        <div class="cmt-input-av"><img src="${AVATAR_URI}" alt=""></div>
+        <input class="cmt-input" id="ci-${idx}" type="text" placeholder="Add a note…"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitCmt(${idx})}">
+        <button class="cmt-send" onclick="submitCmt(${idx})">Reply</button>
+      </div>
+    </div>` : '';
+
+  const heartPath = e.favorited
+    ? 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'
+    : 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78zM12 18.34L5 11.37a3.5 3.5 0 1 1 4.95-4.95L12 8.34l2.05-1.92A3.5 3.5 0 1 1 19 11.37L12 18.34z';
+
+  const menuHTML = openMenu === idx ? `
+    <div class="entry-dropdown" onclick="event.stopPropagation()">
+      <button class="dd-item" onclick="startEdit(${idx});event.stopPropagation()">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        Edit
+      </button>
+      <button class="dd-item danger" onclick="deleteEntry(${idx});event.stopPropagation()">
+        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        Delete
+      </button>
+    </div>` : '';
+
+  // When editing, show textarea instead of text
+  const bodyHTML = e.editing
+    ? `<textarea class="entry-edit-ta" id="edit-ta-${idx}" rows="3"
+         onkeydown="if(event.key==='Escape')cancelEdit(${idx})"
+       >${esc(e.text)}</textarea>
+       <div class="entry-edit-actions">
+         <button class="edit-cancel-btn" onclick="cancelEdit(${idx})">Cancel</button>
+         <button class="edit-save-btn"   onclick="saveEdit(${idx})">Save</button>
+       </div>`
+    : `<div class="entry-body-text">${esc(e.text)}</div>
+       ${thumbsHTML}
+       <div class="entry-actions">
+         <button class="ea${e.commentOpen?' cmt-open':''}" onclick="toggleCmt(${idx})">
+           <svg viewBox="0 0 24 24"><path d="M1.75 1.5h20.5c.69 0 1.25.56 1.25 1.25v13.5c0 .69-.56 1.25-1.25 1.25H6.56l-4.31 3.44V2.75c0-.69.56-1.25 1.25-1.25zm.75 1.5v14.76l2.94-2.35.31-.25H21.5V3H2.5z"/></svg>
+           ${e.comments.length ? `<span class="ea-label">${e.comments.length}</span>` : ''}
+         </button>
+         <button class="ea${e.favorited?' heart-on':''}" onclick="toggleFav(${idx})">
+           <svg viewBox="0 0 24 24"><path d="${heartPath}"/></svg>
+         </button>
+         <button class="ea${e.attachments.length>=2?' att-full':''}" onclick="${e.attachments.length<2?`addAttach(${idx})`:''}">
+           <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+           ${e.attachments.length ? `<span class="ea-label">${e.attachments.length}/2</span>` : ''}
+         </button>
+       </div>
+       ${cmtsHTML}`;
+
+  return `
+    <div class="entry" style="animation:fadeIn 0.22s ease ${delay}s both">
+      <div class="entry-avatar"><img src="${AVATAR_URI}" alt=""></div>
+      <div class="entry-right">
+        <div class="entry-header">
+          <span class="entry-name">Alex Chen</span>
+          <span class="entry-handle">@journal</span>
+          <span class="entry-dot">·</span>
+          <span class="entry-time">${fmtTime(e.ts)}</span>
+          <div class="entry-menu-wrap" onclick="event.stopPropagation()">
+            <button class="dots-btn" onclick="toggleMenu(${idx});event.stopPropagation()">
+              <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+            </button>
+            ${menuHTML}
+          </div>
+        </div>
+        ${bodyHTML}
+      </div>
+    </div>`;
+}
+
+// ── Render ─────────────────────────────────────────────
+function renderList(list, containerId, emptyTitle, emptySub) {
+  const el = byId(containerId);
+  if (!list.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-title">${emptyTitle}</div>
+      <div class="empty-sub">${emptySub}</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map((e, i) => entryHTML(e, i < 4 ? i * 0.05 : 0)).join('');
+  // Focus edit textarea if needed
+  list.forEach(e => {
+    if (e.editing) {
+      const ta = byId(`edit-ta-${entries.indexOf(e)}`);
+      if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    }
+    if (e.commentOpen) {
+      const ci = byId(`ci-${entries.indexOf(e)}`);
+      if (ci) ci.focus();
+    }
+  });
+}
+
+function renderHome()      { renderList(entries, 'feed-home', 'Nothing here yet', 'Write your first moment above.'); }
+function renderFavorites() { renderList(entries.filter(e => e.favorited), 'feed-favorites', 'No favorites yet', 'Tap the heart on any entry to save it here.'); }
+
+function renderSearch() {
+  const q = (byId('search-input')?.value || '').toLowerCase().trim();
+  let list = [...entries];
+  if (searchMonth !== null) {
+    list = list.filter(e => e.ts.getFullYear() === searchYear && e.ts.getMonth() === searchMonth);
+  } else if (searchYear !== new Date().getFullYear()) {
+    list = list.filter(e => e.ts.getFullYear() === searchYear);
+  }
+  if (q) list = list.filter(e => e.text.toLowerCase().includes(q));
+  if (!q && searchMonth === null && searchYear === new Date().getFullYear()) {
+    byId('feed-search').innerHTML = `<div class="empty">
+      <div class="empty-title">Find a moment</div>
+      <div class="empty-sub">Search by keyword, or pick a month to browse by date.</div></div>`;
+    return;
+  }
+  renderList(list, 'feed-search', 'No results', 'Try a different keyword or date range.');
+}
+
+function renderMonthGrid() {
+  const grid = byId('month-grid');
+  if (!grid) return;
+  grid.innerHTML = MONTHS.map((m, i) => {
+    const has = entries.some(e => e.ts.getFullYear() === searchYear && e.ts.getMonth() === i);
+    const sel = searchMonth === i;
+    return `<button class="month-btn${sel?' selected':''}${has?' has-data':''}" onclick="selectMonth(${i})">${m}</button>`;
+  }).join('');
+}
+
+function renderProfileStats() {
+  const el = byId('profile-stats');
+  if (!el) return;
+  const favCount = entries.filter(e => e.favorited).length;
+  const earliest = entries.reduce((a, b) => a.ts < b.ts ? a : b, entries[0]);
+  const days = earliest ? Math.ceil((Date.now() - earliest.ts) / 86400000) : 0;
+  el.innerHTML = `
+    <div class="stat-item"><div class="stat-num">${entries.length}</div><div class="stat-label">Posts</div></div>
+    <div class="stat-item"><div class="stat-num">${favCount}</div><div class="stat-label">Favorites</div></div>
+    <div class="stat-item"><div class="stat-num">${days}</div><div class="stat-label">Days</div></div>`;
+}
+
+function renderAll() {
+  renderHome();
+  renderFavorites();
+  renderSearch();
+  renderMonthGrid();
+  renderProfileStats();
+}
+
+// ── Three-dots menu ────────────────────────────────────
+function toggleMenu(idx) {
+  openMenu = openMenu === idx ? null : idx;
+  renderAll();
+}
+
+function startEdit(idx) {
+  openMenu = null;
+  entries[idx].editing = true;
+  renderAll();
+}
+
+function saveEdit(idx) {
+  const ta = byId(`edit-ta-${idx}`);
+  if (!ta) return;
+  const text = ta.value.trim();
+  if (text) entries[idx].text = text;
+  entries[idx].editing = false;
+  renderAll();
+}
+
+function cancelEdit(idx) {
+  entries[idx].editing = false;
+  renderAll();
+}
+
+function deleteEntry(idx) {
+  openMenu = null;
+  entries.splice(idx, 1);
+  renderAll();
+  showToast('Entry deleted');
+}
+
+// ── Entry actions ──────────────────────────────────────
+function toggleCmt(idx) {
+  entries[idx].commentOpen = !entries[idx].commentOpen;
+  renderAll();
+}
+
+function submitCmt(idx) {
+  const input = byId(`ci-${idx}`);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  entries[idx].comments.push({ text, ts: new Date() });
+  renderAll();
+}
+
+function toggleFav(idx) {
+  entries[idx].favorited = !entries[idx].favorited;
+  renderAll();
+  showToast(entries[idx].favorited ? 'Added to favorites' : 'Removed from favorites');
+}
+
+function addAttach(idx) {
+  if (entries[idx].attachments.length >= 2) return;
+  attachTarget = idx;
+  byId('attach-input').click();
+}
+
+function handleAttach(e) {
+  const file = e.target.files[0];
+  if (!file || attachTarget === null) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    entries[attachTarget].attachments.push(ev.target.result);
+    renderAll();
+    e.target.value = '';
+    attachTarget = null;
+  };
+  reader.readAsDataURL(file);
+}
+
+function openOverlay(idx, ai) {
+  byId('overlay-img').src = entries[idx].attachments[ai];
+  byId('img-overlay').classList.add('open');
+}
+function closeOverlay() {
+  byId('img-overlay').classList.remove('open');
+  byId('overlay-img').src = '';
+}
+
+// Close menu on outside click
+document.addEventListener('click', () => {
+  if (openMenu !== null) { openMenu = null; renderAll(); }
+});
+
+// ── Compose ────────────────────────────────────────────
+function onInput() {
+  const ta = byId('compose-text'), len = ta.value.length;
+  const rem = MAX - len, pct = len / MAX;
+  byId('ring-fg').style.strokeDashoffset = CIRC * (1 - pct);
+  byId('ring-fg').style.stroke = rem <= 20 ? '#f4212e' : rem <= 60 ? '#ffd400' : '#1d9bf0';
+  const remEl = byId('char-rem');
+  remEl.textContent = rem <= 60 ? rem : '';
+  remEl.style.fill  = rem <= 20 ? '#f4212e' : '#536471';
+  byId('post-btn').disabled = len === 0;
+}
+
+function post() {
+  const ta = byId('compose-text'), text = ta.value.trim();
+  if (!text) {
+    ta.style.animation = 'shake 0.35s ease';
+    ta.addEventListener('animationend', () => ta.style.animation = '', { once:true });
+    return;
+  }
+  entries.unshift(mkEntry(text, new Date()));
+  ta.value = '';
+  onInput();
+  renderAll();
+  showToast('Posted');
+  byId('body').scrollTop = 0;
+}
+
+// ── Search ─────────────────────────────────────────────
+function onSearch() {
+  const q = byId('search-input').value;
+  byId('search-clear').style.display = q ? 'block' : 'none';
+  renderSearch();
+}
+function clearSearch() {
+  byId('search-input').value = '';
+  byId('search-clear').style.display = 'none';
+  searchMonth = null;
+  renderMonthGrid();
+  renderSearch();
+}
+function changeYear(delta) {
+  searchYear += delta;
+  byId('year-label').textContent = searchYear;
+  searchMonth = null;
+  renderMonthGrid();
+  renderSearch();
+}
+function selectMonth(m) {
+  searchMonth = searchMonth === m ? null : m;
+  renderMonthGrid();
+  renderSearch();
+}
+
+// ── Profile ────────────────────────────────────────────
+function toggleDark() {
+  darkMode = !darkMode;
+  byId('phone').classList.toggle('dark', darkMode);
+}
+
+// ── Nav ────────────────────────────────────────────────
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.bnav').forEach(b => b.classList.remove('active'));
+  byId('view-' + view).classList.add('active');
+  byId('bnav-' + view).classList.add('active');
+  byId('topnav-title').textContent = VIEW_TITLES[view];
+  if (view === 'favorites') renderFavorites();
+  if (view === 'search')  { renderMonthGrid(); renderSearch(); }
+  if (view === 'profile') renderProfileStats();
+}
+
+// ── Toast ──────────────────────────────────────────────
+function showToast(msg) {
+  const t = byId('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── Clock ──────────────────────────────────────────────
+function tick() {
+  const now = new Date();
+  byId('status-time').textContent =
+    (now.getHours() % 12 || 12) + ':' + String(now.getMinutes()).padStart(2, '0');
+}
+tick();
+setInterval(tick, 30000);
+
+// ── Boot ───────────────────────────────────────────────
+byId('year-label').textContent = searchYear;
+setAvatars();
+renderAll();
+</script>
+</body>
+</html>
