@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Micro-Journal</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -500,6 +500,127 @@
       40%      { transform: translateX(5px); }
       60%      { transform: translateX(-3px); }
       80%      { transform: translateX(3px); }
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+
+    /* ── Shared: remove phone shell on non-desktop ── */
+    @media (max-width: 900px) {
+      html, body { background: var(--bg); }
+      .phone {
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100svh; /* respects mobile browser chrome */
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      /* Hide fake status bar — real device has its own */
+      .statusbar { display: none; }
+      /* Safe-area padding for notch / home indicator */
+      .bottomnav {
+        padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    /* ── Tablet (521 – 900 px) ───────────────────── */
+    @media (min-width: 521px) and (max-width: 900px) {
+      .phone {
+        max-width: 680px;
+        margin: 0 auto;
+        border-left: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+        min-height: 100vh;
+      }
+      .features-grid { grid-template-columns: repeat(3, 1fr); }
+      .media-grid    { grid-template-columns: repeat(4, 1fr); }
+      .profile-header { padding: 32px 24px 24px; }
+      .profile-pic    { width: 88px; height: 88px; }
+    }
+
+    /* ── Mobile (≤ 520 px) ───────────────────────── */
+    @media (max-width: 520px) {
+      /* Typography scale-down */
+      .compose-textarea            { font-size: 18px; }
+      .compose-textarea::placeholder { font-size: 18px; }
+      .entry-body-text             { font-size: 14px; }
+      .topnav-title                { font-size: 16px; }
+
+      /* Prevent iOS input zoom (must be ≥ 16 px) */
+      .cmt-input,
+      .search-bar input,
+      .entry-edit-ta,
+      .comment-input               { font-size: 16px; }
+
+      /* Bigger tap targets */
+      .dots-btn                    { width: 36px; height: 36px; }
+      .ea                          { padding: 6px 0; gap: 6px; }
+      .month-btn                   { padding: 10px 2px; font-size: 12px; }
+      .post-btn                    { padding: 10px 20px; }
+      .cmt-send                    { padding: 9px 14px; }
+
+      /* Compose spacing */
+      .compose                     { padding: 10px 12px 0; gap: 10px; }
+      .compose-footer              { padding: 8px 0 10px; }
+
+      /* Entry spacing */
+      .entry                       { padding: 10px 12px; gap: 10px; }
+      .entry-actions               { gap: 22px; margin-top: 8px; }
+      .entry-header                { gap: 4px; }
+      .entry-handle,
+      .entry-dot,
+      .entry-time                  { font-size: 13px; }
+
+      /* Attachment thumbnails */
+      .attach-thumb                { width: 80px; height: 68px; }
+
+      /* Search */
+      .search-sticky               { padding: 10px 12px; }
+      .month-picker                { padding: 12px 12px 10px; }
+      .month-grid                  { gap: 5px; }
+
+      /* Settings */
+      .settings-item               { padding: 12px 14px; gap: 12px; }
+      .si-icon                     { width: 32px; height: 32px; border-radius: 9px; }
+      .si-icon svg                 { width: 16px; height: 16px; }
+      .si-label                    { font-size: 14px; }
+      .si-sub                      { font-size: 12px; }
+
+      /* Profile */
+      .profile-header              { padding: 20px 16px 16px; }
+      .profile-pic                 { width: 64px; height: 64px; }
+      .profile-name                { font-size: 18px; }
+      .stat-num                    { font-size: 20px; }
+      .stat-label                  { font-size: 11px; }
+
+      /* Library */
+      .features-grid               { gap: 8px; padding: 12px 12px 20px; }
+      .feat-card                   { padding: 14px 12px; }
+      .feat-title                  { font-size: 12px; }
+      .feat-desc                   { font-size: 11px; }
+
+      /* Nav — 5 tabs on narrow screen */
+      .bnav svg                    { width: 22px; height: 22px; }
+      .bnav                        { padding: 6px 0 4px; }
+
+      /* Comment section */
+      .cmt-section                 { margin-top: 10px; }
+      .cmt-input-row               { gap: 6px; }
+    }
+
+    /* ── Very small phones (< 360 px) ─────────────── */
+    @media (max-width: 359px) {
+      .features-grid               { grid-template-columns: 1fr; }
+      .entry-actions               { gap: 16px; }
+      .stat-item                   { flex: 0 0 33.33%; }
+      .bottomnav                   { gap: 0; }
+      .bnav svg                    { width: 20px; height: 20px; }
+      .profile-stats               { flex-wrap: wrap; }
+      .profile-pic                 { width: 56px; height: 56px; }
+      .attach-thumb                { width: 68px; height: 60px; }
+      .entry-dropdown              { min-width: 120px; }
     }
   </style>
 </head>
