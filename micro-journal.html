@@ -66,12 +66,55 @@
       flex-shrink: 0; z-index: 10;
       background: var(--bg);
     }
+    .topnav-avatar-wrap {
+      position: relative; flex-shrink: 0;
+    }
     .topnav-avatar {
       width: 32px; height: 32px; border-radius: 50%;
-      overflow: hidden; flex-shrink: 0;
+      overflow: hidden; cursor: pointer;
+      transition: opacity 0.12s, box-shadow 0.12s;
     }
+    .topnav-avatar:hover { opacity: 0.85; box-shadow: 0 0 0 2px var(--blue); }
     .topnav-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .topnav-title { font-size: 17px; font-weight: 700; color: var(--text); }
+
+    /* ── Profile quick-menu ───────────────────── */
+    .profile-menu {
+      position: absolute; left: 0; top: calc(100% + 8px);
+      background: var(--bg); border-radius: 16px;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.18), 0 0 0 1px var(--border);
+      min-width: 210px; z-index: 100; overflow: hidden;
+      animation: popIn 0.14s ease;
+      display: none;
+    }
+    .profile-menu.open { display: block; }
+    .pm-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .pm-avatar {
+      width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+    }
+    .pm-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .pm-name  { font-size: 14px; font-weight: 700; color: var(--text); }
+    .pm-handle { font-size: 12px; color: var(--sub); margin-top: 1px; }
+    .pm-item {
+      display: flex; align-items: center; gap: 12px;
+      width: 100%; padding: 12px 16px;
+      border: none; background: none; cursor: pointer;
+      font-size: 14px; font-family: inherit; color: var(--text);
+      text-align: left; transition: background 0.12s;
+    }
+    .pm-item:hover { background: var(--bg-dim); }
+    .pm-item svg   { width: 17px; height: 17px; fill: currentColor; flex-shrink: 0; color: var(--sub); }
+    .pm-item.pm-danger { color: var(--red); }
+    .pm-item .pm-badge {
+      margin-left: auto; background: var(--blue); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 2px 7px;
+      border-radius: 9999px;
+    }
+    .pm-divider { height: 1px; background: var(--border); }
 
     /* ── Body ─────────────────────────────────── */
     .body { flex: 1; overflow-y: auto; scrollbar-width: none; }
@@ -102,7 +145,32 @@
     .compose-footer {
       display: flex; align-items: center;
       justify-content: flex-end;
-      padding: 10px 0 12px; gap: 12px;
+      padding: 10px 0 12px; gap: 10px;
+    }
+    .compose-photo-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--blue); transition: background 0.12s;
+    }
+    .compose-photo-btn:hover { background: rgba(29,155,240,0.1); }
+    .compose-photo-btn:disabled { color: var(--muted); cursor: default; pointer-events: none; }
+    .compose-photo-btn svg { width: 20px; height: 20px; fill: currentColor; }
+    .compose-preview {
+      position: relative; margin: 0 0 10px;
+      display: inline-block;
+    }
+    .compose-preview img {
+      width: 100%; max-height: 180px; object-fit: cover;
+      border-radius: 12px; border: 1px solid var(--border);
+      display: block;
+    }
+    .compose-preview-remove {
+      position: absolute; top: 6px; right: 6px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: rgba(0,0,0,0.6); color: #fff;
+      border: none; cursor: pointer; font-size: 14px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
     }
     .char-ring { width: 24px; height: 24px; flex-shrink: 0; }
     .char-ring circle { fill: none; stroke-width: 2.4; transition: stroke-dashoffset 0.2s, stroke 0.2s; }
@@ -310,9 +378,20 @@
 
     /* ── Profile ──────────────────────────────── */
     .profile-header {
+      position: relative;
       display: flex; flex-direction: column; align-items: center;
       padding: 24px 20px 20px; border-bottom: 1px solid var(--border);
     }
+    .profile-edit-btn {
+      position: absolute; top: 16px; right: 16px;
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 1.5px solid var(--border); background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.12s, border-color 0.12s;
+      color: var(--sub);
+    }
+    .profile-edit-btn:hover { background: var(--bg-dim); border-color: var(--blue); color: var(--blue); }
+    .profile-edit-btn svg { width: 15px; height: 15px; fill: currentColor; }
     .profile-pic {
       width: 72px; height: 72px; border-radius: 50%;
       overflow: hidden; margin-bottom: 12px;
@@ -326,6 +405,48 @@
       text-align: center; line-height: 1.5;
     }
     .profile-joined { font-size: 13px; color: var(--sub); margin-top: 6px; }
+
+    /* Clickable pic in edit mode */
+    .profile-pic-edit {
+      position: relative; cursor: pointer; margin-bottom: 12px;
+    }
+    .profile-pic-edit .profile-pic { margin-bottom: 0; }
+    .profile-pic-edit-overlay {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .profile-pic-edit:hover .profile-pic-edit-overlay { opacity: 1; }
+    .profile-pic-edit-overlay svg { width: 22px; height: 22px; fill: #fff; }
+
+    /* Edit profile form */
+    .profile-edit-form {
+      width: 100%; display: flex; flex-direction: column; gap: 10px;
+      margin-top: 4px;
+    }
+    .pe-field { display: flex; flex-direction: column; gap: 4px; }
+    .pe-label { font-size: 11px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 0.6px; }
+    .pe-input, .pe-textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 9px 12px; font-size: 14px; font-family: inherit;
+      color: var(--text); background: var(--bg-dim); outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .pe-input:focus, .pe-textarea:focus { border-color: var(--blue); background: var(--bg); }
+    .pe-textarea { resize: none; line-height: 1.5; }
+    .pe-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+    .pe-save {
+      background: var(--blue); color: #fff; border: none;
+      border-radius: 9999px; padding: 8px 20px;
+      font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .pe-cancel {
+      background: none; color: var(--sub);
+      border: 1.5px solid var(--border); border-radius: 9999px;
+      padding: 8px 16px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit;
+    }
 
     .profile-stats {
       display: flex; border-bottom: 1px solid var(--border);
@@ -392,6 +513,118 @@
     }
     .logout-btn:hover { background: rgba(244,33,46,0.06); }
 
+    /* ── Reminder time picker ─────────────────── */
+    .reminder-time-row {
+      margin-top: 8px;
+      display: none;
+    }
+    .reminder-time-row.visible { display: block; }
+    .reminder-time-input {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 7px 12px; font-size: 15px; font-family: inherit;
+      color: var(--text); background: var(--bg-dim); outline: none;
+      cursor: pointer; transition: border-color 0.15s;
+    }
+    .reminder-time-input:focus { border-color: var(--blue); background: var(--bg); }
+
+    /* ── Auth screen ──────────────────────────── */
+    .auth-screen {
+      display: none; flex-direction: column;
+      flex: 1; overflow-y: auto; scrollbar-width: none;
+      padding: 0 28px 32px;
+      background: var(--bg);
+    }
+    .auth-screen::-webkit-scrollbar { display: none; }
+    .auth-screen.active { display: flex; }
+
+    .auth-logo {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 44px 0 32px;
+    }
+    .auth-logo-mark {
+      width: 58px; height: 58px; border-radius: 18px;
+      background: var(--blue); display: flex; align-items: center;
+      justify-content: center; margin-bottom: 14px;
+      box-shadow: 0 6px 20px rgba(29,155,240,0.35);
+    }
+    .auth-logo-mark svg { width: 30px; height: 30px; fill: #fff; }
+    .auth-app-name  { font-size: 22px; font-weight: 800; color: var(--text); }
+    .auth-app-sub   { font-size: 14px; color: var(--sub); margin-top: 4px; }
+
+    .auth-tabs {
+      display: flex; border: 1.5px solid var(--border);
+      border-radius: 12px; overflow: hidden; margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1; padding: 10px; text-align: center;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      color: var(--sub); background: none; border: none;
+      font-family: inherit; transition: background 0.15s, color 0.15s;
+    }
+    .auth-tab.active { background: var(--blue); color: #fff; }
+
+    .auth-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .auth-label { font-size: 12px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 0.6px; }
+    .auth-input {
+      border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 12px 14px; font-size: 16px; font-family: inherit;
+      color: var(--text); background: var(--bg-dim); outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .auth-input:focus { border-color: var(--blue); background: var(--bg); }
+
+    .auth-btn {
+      width: 100%; padding: 14px; border-radius: 12px;
+      border: none; background: var(--blue); color: #fff;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background 0.15s;
+      margin-top: 4px;
+    }
+    .auth-btn:hover { background: var(--blue-dk); }
+
+    .auth-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .auth-divider span { font-size: 12px; color: var(--muted); font-weight: 600; }
+
+    .auth-google-btn {
+      width: 100%; padding: 13px 14px; border-radius: 12px;
+      border: 1.5px solid var(--border); background: var(--bg);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: inherit; color: var(--text);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .auth-google-btn:hover { background: var(--bg-dim); border-color: var(--sub); }
+    .auth-google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+    .auth-error {
+      background: rgba(244,33,46,0.08); border: 1px solid rgba(244,33,46,0.25);
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 13px; color: var(--red); margin-bottom: 14px;
+      display: none;
+    }
+    .auth-error.visible { display: block; }
+
+    /* ── Profile features divider ─────────────── */
+    .profile-features-divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 28px 16px 0;
+    }
+    .profile-features-divider::before,
+    .profile-features-divider::after {
+      content: ''; flex: 1; height: 1.5px; background: var(--border);
+    }
+    .profile-features-divider span {
+      font-size: 12px; font-weight: 700; color: var(--sub);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      white-space: nowrap;
+    }
+
     /* ── Empty state ──────────────────────────── */
     .empty { padding: 52px 32px; text-align: center; }
     .empty-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
@@ -434,6 +667,34 @@
     .bnav svg    { width: 24px; height: 24px; fill: currentColor; }
     .bnav-dot    { width: 4px; height: 4px; border-radius: 50%; background: var(--blue); opacity: 0; }
     .bnav.active .bnav-dot { opacity: 1; }
+
+    /* ── Hashtags ─────────────────────────────── */
+    .hashtag {
+      color: var(--blue); cursor: pointer; font-weight: 500;
+      border-radius: 4px; transition: opacity 0.12s;
+    }
+    .hashtag:hover { opacity: 0.75; text-decoration: underline; }
+    .hashtag-chips {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      padding: 12px 16px 16px;
+    }
+    .hashtag-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(29,155,240,0.1); color: var(--blue);
+      border: 1px solid rgba(29,155,240,0.25);
+      border-radius: 9999px; padding: 6px 13px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+      font-family: inherit;
+    }
+    .hashtag-chip:hover { background: rgba(29,155,240,0.18); border-color: rgba(29,155,240,0.5); }
+    .hashtag-chip .hc-count {
+      font-size: 11px; font-weight: 500; opacity: 0.7;
+    }
+    .hashtag-empty {
+      padding: 20px 16px; font-size: 14px; color: var(--sub);
+      border-bottom: 1px solid var(--border);
+    }
 
     /* ── Library tab ──────────────────────────── */
     .lib-section {
@@ -628,11 +889,57 @@
 
 <div class="toast" id="toast"></div>
 <input type="file" id="attach-input" accept="image/*" style="display:none" onchange="handleAttach(event)">
+<input type="file" id="pic-input" accept="image/*" style="display:none" onchange="handlePicChange(event)">
 <div class="img-overlay" id="img-overlay" onclick="closeOverlay()">
   <img id="overlay-img" src="" alt="">
 </div>
 
 <div class="phone" id="phone">
+
+  <!-- ── Auth screen ─────────────────────────── -->
+  <div class="auth-screen active" id="auth-screen">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </div>
+      <div class="auth-app-name">Micro-Journal</div>
+      <div class="auth-app-sub">Your private space for daily moments</div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+
+    <div id="auth-error" class="auth-error"></div>
+
+    <div id="auth-signup-name" class="auth-field" style="display:none">
+      <div class="auth-label">Your Name</div>
+      <input class="auth-input" id="auth-name" type="text" placeholder="Alex Chen" autocomplete="name">
+    </div>
+
+    <div class="auth-field">
+      <div class="auth-label">Email</div>
+      <input class="auth-input" id="auth-email" type="email" placeholder="you@example.com" autocomplete="email">
+    </div>
+
+    <div class="auth-field">
+      <div class="auth-label">Password</div>
+      <input class="auth-input" id="auth-password" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="auth-btn" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
+
+    <div class="auth-divider"><span>or</span></div>
+
+    <button class="auth-google-btn" onclick="signInWithGoogle()">
+      <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+
+  <!-- ── App shell ────────────────────────────── -->
+  <div id="app-shell" style="display:none; flex-direction:column; flex:1; overflow:hidden; min-height:0">
 
   <div class="statusbar">
     <span class="time" id="status-time">9:41</span>
@@ -644,7 +951,47 @@
   </div>
 
   <div class="topnav">
-    <div class="topnav-avatar"><img id="nav-avatar" src="" alt=""></div>
+    <div class="topnav-avatar-wrap" id="profile-menu-wrap">
+      <div class="topnav-avatar" onclick="toggleProfileMenu(event)">
+        <img id="nav-avatar" src="" alt="">
+      </div>
+      <div class="profile-menu" id="profile-menu" onclick="event.stopPropagation()">
+        <div class="pm-header">
+          <div class="pm-avatar"><img id="pm-avatar" src="" alt=""></div>
+          <div>
+            <div class="pm-name" id="pm-name-text">Alex Chen</div>
+            <div class="pm-handle" id="pm-handle-text"></div>
+          </div>
+        </div>
+        <button class="pm-item" onclick="closeProfileMenu();switchView('home');byId('compose-text').focus()">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          New Entry
+          <span class="pm-badge" id="pm-count"></span>
+        </button>
+        <button class="pm-item" onclick="closeProfileMenu();switchView('favorites')">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Favorites
+        </button>
+        <button class="pm-item" onclick="closeProfileMenu();switchView('library')">
+          <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6a7 7 0 0 1 7-7 7 7 0 0 1 7 7 7 7 0 0 1-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 9-9 9 9 0 0 0-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+          Library
+        </button>
+        <div class="pm-divider"></div>
+        <button class="pm-item" onclick="closeProfileMenu();toggleDark()">
+          <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+          <span id="pm-dark-label">Dark Mode</span>
+        </button>
+        <button class="pm-item" onclick="closeProfileMenu();switchView('profile')">
+          <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 1 1 0 10A5 5 0 0 1 12 2zm0 12c5.33 0 8 2.67 8 4v1H4v-1c0-1.33 2.67-4 8-4z"/></svg>
+          Profile &amp; Settings
+        </button>
+        <div class="pm-divider"></div>
+        <button class="pm-item pm-danger" onclick="closeProfileMenu();signOut()">
+          <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </div>
     <span class="topnav-title" id="topnav-title">Today's Joy</span>
     <div style="width:32px"></div>
   </div>
@@ -658,6 +1005,10 @@
         <div class="compose-right">
           <textarea class="compose-textarea" id="compose-text" maxlength="400"
             placeholder="What made you happy today?" oninput="onInput()"></textarea>
+          <div class="compose-preview" id="compose-preview" style="display:none">
+            <img id="compose-preview-img" src="" alt="">
+            <button class="compose-preview-remove" onclick="removeComposePhoto()" title="Remove photo">×</button>
+          </div>
           <div class="compose-footer">
             <svg class="char-ring" viewBox="0 0 24 24">
               <circle class="ring-bg" cx="12" cy="12" r="9.5"/>
@@ -666,6 +1017,9 @@
                 transform="rotate(-90 12 12)"/>
               <text class="char-rem-text" id="char-rem" x="12" y="12.5"></text>
             </svg>
+            <button class="compose-photo-btn" id="compose-photo-btn" onclick="addComposePhoto()" title="Add photo">
+              <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+            </button>
             <button class="post-btn" id="post-btn" onclick="post()" disabled>Post</button>
           </div>
         </div>
@@ -710,78 +1064,18 @@
       <div id="media-grid-wrap"></div>
 
       <div class="lib-section" style="margin-top:4px">
-        Features
+        Hashtags
+        <span id="hashtag-count"></span>
       </div>
-      <div class="features-grid">
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#1d9bf0">
-            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-          </div>
-          <div class="feat-title">Write & Post</div>
-          <div class="feat-desc">Capture moments up to 400 characters with a live ring counter.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#794bc4">
-            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-          </div>
-          <div class="feat-title">Photo Attachments</div>
-          <div class="feat-desc">Attach up to 2 photos per entry. Tap any photo to view fullscreen.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#f91880">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </div>
-          <div class="feat-title">Favorites</div>
-          <div class="feat-desc">Heart any entry to pin it. Find them instantly in the Favorites tab.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#00ba7c">
-            <svg viewBox="0 0 24 24"><path d="M1.75 1.5h20.5c.69 0 1.25.56 1.25 1.25v13.5c0 .69-.56 1.25-1.25 1.25H6.56l-4.31 3.44V2.75c0-.69.56-1.25 1.25-1.25zm.75 1.5v14.76l2.94-2.35.31-.25H21.5V3H2.5z"/></svg>
-          </div>
-          <div class="feat-title">Comments</div>
-          <div class="feat-desc">Add private notes to any entry. All for your eyes only.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#ff7a00">
-            <svg viewBox="0 0 24 24"><path d="M21.53 20.47l-4.42-4.42A8 8 0 1 0 15.54 17.6l4.42 4.42a.75.75 0 1 0 1.07-1.06zM4 10a6 6 0 1 1 12 0A6 6 0 0 1 4 10z"/></svg>
-          </div>
-          <div class="feat-title">Search & Filter</div>
-          <div class="feat-desc">Full-text search plus a month/year picker to find any moment fast.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#536471">
-            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-          </div>
-          <div class="feat-title">Edit & Delete</div>
-          <div class="feat-desc">Tap ··· on any entry to edit inline or remove it permanently.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#7c6af7">
-            <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-          </div>
-          <div class="feat-title">Dark Mode</div>
-          <div class="feat-desc">Toggle a full dark theme anytime from the Profile tab.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon" style="background:#f5a623">
-            <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-          </div>
-          <div class="feat-title">Media Grid</div>
-          <div class="feat-desc">Every photo you've attached lives here in a browsable grid.</div>
-        </div>
-      </div>
+      <div id="hashtag-chips-wrap"></div>
 
     </div><!-- /view-library -->
 
     <!-- PROFILE -->
     <div class="view" id="view-profile">
 
-      <div class="profile-header">
-        <div class="profile-pic"><img id="profile-pic" src="" alt="Profile"></div>
-        <div class="profile-name">Alex Chen</div>
-        <div class="profile-handle">@journal</div>
-        <div class="profile-bio">Finding joy in the small moments, one entry at a time.</div>
-        <div class="profile-joined">Joined March 2024</div>
+      <div class="profile-header" id="profile-header">
+        <!-- injected by JS -->
       </div>
 
       <div class="profile-stats" id="profile-stats">
@@ -803,26 +1097,20 @@
           <div class="toggle dark-toggle" id="dark-toggle"></div>
         </div>
 
-        <div class="settings-item" onclick="this.querySelector('.toggle').classList.toggle('tog-on')">
-          <div class="si-icon" style="background:#794bc4">
-            <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-          </div>
-          <div class="si-text">
-            <div class="si-label">Notifications</div>
-            <div class="si-sub">Daily journaling reminders</div>
-          </div>
-          <div class="toggle" id="notif-toggle"></div>
-        </div>
-
-        <div class="settings-item" onclick="this.querySelector('.toggle').classList.toggle('tog-on')">
+        <div class="settings-item" onclick="toggleReminder(event)" id="reminder-item">
           <div class="si-icon" style="background:#00ba7c">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
           </div>
           <div class="si-text">
             <div class="si-label">Daily Reminder</div>
-            <div class="si-sub">Remind me every evening at 9 PM</div>
+            <div class="si-sub" id="reminder-sub">Remind me every day at 9:00 PM</div>
+            <div class="reminder-time-row" id="reminder-time-row">
+              <input type="time" class="reminder-time-input" id="reminder-time" value="21:00"
+                onclick="event.stopPropagation()"
+                onchange="onReminderTimeChange()">
+            </div>
           </div>
-          <div class="toggle tog-on"></div>
+          <div class="toggle tog-on" id="reminder-toggle"></div>
         </div>
 
         <div class="settings-group-label">Data</div>
@@ -838,33 +1126,71 @@
           <div class="si-arrow"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
         </div>
 
-        <div class="settings-item" onclick="showToast('Privacy settings coming soon')">
-          <div class="si-icon" style="background:#536471">
-            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-          </div>
-          <div class="si-text">
-            <div class="si-label">Privacy &amp; Data</div>
-            <div class="si-sub">Your journal is stored locally</div>
-          </div>
-          <div class="si-arrow"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></div>
-        </div>
-
-        <div class="settings-group-label">About</div>
-
-        <div class="settings-item">
-          <div class="si-icon" style="background:#f5a623">
-            <svg viewBox="0 0 24 24"><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg>
-          </div>
-          <div class="si-text">
-            <div class="si-label">About</div>
-            <div class="si-sub">Micro-Journal · Personal edition</div>
-          </div>
-          <div class="si-right">v1.0.0</div>
-        </div>
-
       </div>
 
-      <button class="logout-btn" onclick="showToast('Signed out')">Sign Out</button>
+      <div class="profile-features-divider">
+        <span>Features</span>
+      </div>
+      <div class="features-grid">
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#1d9bf0">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </div>
+          <div class="feat-title">Write &amp; Post</div>
+          <div class="feat-desc">Capture moments up to 400 characters with a live ring counter.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#794bc4">
+            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          </div>
+          <div class="feat-title">Photo Attachments</div>
+          <div class="feat-desc">Attach 1 photo per entry. Tap any photo to view fullscreen.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#f91880">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="feat-title">Favorites</div>
+          <div class="feat-desc">Heart any entry to pin it. Find them instantly in the Favorites tab.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#00ba7c">
+            <svg viewBox="0 0 24 24"><path d="M1.75 1.5h20.5c.69 0 1.25.56 1.25 1.25v13.5c0 .69-.56 1.25-1.25 1.25H6.56l-4.31 3.44V2.75c0-.69.56-1.25 1.25-1.25zm.75 1.5v14.76l2.94-2.35.31-.25H21.5V3H2.5z"/></svg>
+          </div>
+          <div class="feat-title">Comments</div>
+          <div class="feat-desc">Add private notes to any entry. All for your eyes only.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#ff7a00">
+            <svg viewBox="0 0 24 24"><path d="M21.53 20.47l-4.42-4.42A8 8 0 1 0 15.54 17.6l4.42 4.42a.75.75 0 1 0 1.07-1.06zM4 10a6 6 0 1 1 12 0A6 6 0 0 1 4 10z"/></svg>
+          </div>
+          <div class="feat-title">Search &amp; Filter</div>
+          <div class="feat-desc">Full-text search plus a month/year picker to find any moment fast.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#536471">
+            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+          </div>
+          <div class="feat-title">Edit &amp; Delete</div>
+          <div class="feat-desc">Tap ··· on any entry to edit inline or remove it permanently.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#f5a623">
+            <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+          </div>
+          <div class="feat-title">Media Grid</div>
+          <div class="feat-desc">Every photo you've attached lives here in a browsable grid.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon" style="background:#1d9bf0">
+            <svg viewBox="0 0 24 24"><path d="M5.26 15H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1m-4 4h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H12a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zm1 3h0m4 0h0m-4 4h8" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+          </div>
+          <div class="feat-title">Hashtags</div>
+          <div class="feat-desc">Add #tags to entries. Browse and filter by tag in the Library.</div>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="signOut()">Sign Out</button>
 
     </div><!-- /view-profile -->
 
@@ -894,6 +1220,8 @@
     </div>
   </div>
 
+  </div><!-- /app-shell -->
+
 </div><!-- /phone -->
 
 <script>
@@ -922,10 +1250,11 @@ const AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100
 const AVATAR_URI = 'data:image/svg+xml;base64,' + btoa(AVATAR_SVG);
 
 function setAvatars() {
-  document.querySelectorAll('[data-avatar]').forEach(el => { el.src = AVATAR_URI; });
+  const src = profileData.avatar || AVATAR_URI;
+  document.querySelectorAll('[data-avatar]').forEach(el => { el.src = src; });
   ['nav-avatar','compose-avatar','profile-pic'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.src = AVATAR_URI;
+    if (el) el.src = src;
   });
 }
 
@@ -936,11 +1265,20 @@ const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov
 const VIEW_TITLES = { home:"Today's Joy", search:'Search', favorites:'Favorites', library:'Library', profile:'Profile' };
 
 // ── State ──────────────────────────────────────────────
-let openMenu     = null;
-let attachTarget = null;
-let searchYear   = new Date().getFullYear();
-let searchMonth  = null;
-let darkMode     = false;
+let openMenu          = null;
+let attachTarget      = null;
+let composeAttachment = null;
+let searchYear        = new Date().getFullYear();
+let searchMonth       = null;
+let darkMode          = false;
+
+const profileData = {
+  name:   'Alex Chen',
+  email:  '',
+  bio:    'Finding joy in the small moments, one entry at a time.',
+  joined: 'March 2024',
+};
+let profileEditing = false;
 
 // ── Entry factory ──────────────────────────────────────
 let _uid = 0;
@@ -962,16 +1300,20 @@ function ago(days, hour) {
 }
 
 const entries = [
-  mkEntry("That first sip of coffee while the house was still quiet. Pure bliss.",          ago(0,14)),
-  mkEntry("My dog did that thing where she tilts her head trying to understand me. Melted.", ago(1, 9), { favorited:true }),
-  mkEntry("Nailed the presentation at work. Three months of prep, twenty minutes, no slip.", ago(2,11)),
-  mkEntry("Made ramen from scratch. Six hours of effort, zero regrets.",                     ago(3,19)),
-  mkEntry("Evening walk in the park. The leaves were golden and the light was exactly right.",ago(4,17), { favorited:true }),
+  mkEntry("That first sip of #coffee while the house was still quiet. Pure bliss.",          ago(0,14)),
+  mkEntry("My dog did that thing where she tilts her head trying to understand me. Melted. #pets #joy", ago(1, 9), { favorited:true }),
+  mkEntry("Nailed the presentation at work. Three months of prep, twenty minutes, no slip. #work #proud", ago(2,11)),
+  mkEntry("Made ramen from scratch. Six hours of effort, zero regrets. #cooking #food",      ago(3,19)),
+  mkEntry("Evening walk in the park. The leaves were golden and the light was exactly right. #nature #joy", ago(4,17), { favorited:true }),
 ];
 
 // ── Helpers ────────────────────────────────────────────
 function esc(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function renderText(s) {
+  return esc(s).replace(/#(\w+)/g,
+    '<span class="hashtag" onclick="filterByTag(\'$1\')">#$1</span>');
 }
 function fmtTime(d) {
   const now = new Date(), diff = Math.floor((now - d) / 1000);
@@ -1036,7 +1378,7 @@ function entryHTML(e, delay) {
          <button class="edit-cancel-btn" onclick="cancelEdit(${idx})">Cancel</button>
          <button class="edit-save-btn"   onclick="saveEdit(${idx})">Save</button>
        </div>`
-    : `<div class="entry-body-text">${esc(e.text)}</div>
+    : `<div class="entry-body-text">${renderText(e.text)}</div>
        ${thumbsHTML}
        <div class="entry-actions">
          <button class="ea${e.commentOpen?' cmt-open':''}" onclick="toggleCmt(${idx})">
@@ -1046,9 +1388,8 @@ function entryHTML(e, delay) {
          <button class="ea${e.favorited?' heart-on':''}" onclick="toggleFav(${idx})">
            <svg viewBox="0 0 24 24"><path d="${heartPath}"/></svg>
          </button>
-         <button class="ea${e.attachments.length>=2?' att-full':''}" onclick="${e.attachments.length<2?`addAttach(${idx})`:''}">
+         <button class="ea${e.attachments.length>=1?' att-full':''}" onclick="${e.attachments.length<1?`addAttach(${idx})`:''}">
            <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-           ${e.attachments.length ? `<span class="ea-label">${e.attachments.length}/2</span>` : ''}
          </button>
        </div>
        ${cmtsHTML}`;
@@ -1058,8 +1399,7 @@ function entryHTML(e, delay) {
       <div class="entry-avatar"><img src="${AVATAR_URI}" alt=""></div>
       <div class="entry-right">
         <div class="entry-header">
-          <span class="entry-name">Alex Chen</span>
-          <span class="entry-handle">@journal</span>
+          <span class="entry-name">${esc(profileData.name)}</span>
           <span class="entry-dot">·</span>
           <span class="entry-time">${fmtTime(e.ts)}</span>
           <div class="entry-menu-wrap" onclick="event.stopPropagation()">
@@ -1128,7 +1468,88 @@ function renderMonthGrid() {
   }).join('');
 }
 
+function renderProfileHeader() {
+  const el = byId('profile-header');
+  if (!el) return;
+  // Also sync the topnav avatar alt / pm-name labels
+  const pmName = byId('pm-name-text');
+  if (pmName) pmName.textContent = profileData.name;
+
+  if (profileEditing) {
+    el.innerHTML = `
+      <div class="profile-pic-edit" onclick="byId('pic-input').click()" title="Change photo">
+        <div class="profile-pic"><img id="profile-pic-edit-img" src="${profileData.avatar || AVATAR_URI}" alt="Profile"></div>
+        <div class="profile-pic-edit-overlay">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        </div>
+      </div>
+      <div class="profile-edit-form">
+        <div class="pe-field">
+          <div class="pe-label">Name</div>
+          <input class="pe-input" id="pe-name" type="text" value="${esc(profileData.name)}" maxlength="40">
+        </div>
+        <div class="pe-field">
+          <div class="pe-label">Email</div>
+          <input class="pe-input" type="email" value="${esc(profileData.email || '')}" disabled style="opacity:0.55;cursor:not-allowed">
+        </div>
+        <div class="pe-field">
+          <div class="pe-label">Bio</div>
+          <textarea class="pe-textarea" id="pe-bio" rows="3" maxlength="160">${esc(profileData.bio)}</textarea>
+        </div>
+        <div class="pe-actions">
+          <button class="pe-cancel" onclick="cancelEditProfile()">Cancel</button>
+          <button class="pe-save" onclick="saveEditProfile()">Save</button>
+        </div>
+      </div>`;
+  } else {
+    el.innerHTML = `
+      <button class="profile-edit-btn" onclick="startEditProfile()" title="Edit profile">
+        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+      </button>
+      <div class="profile-pic"><img src="${profileData.avatar || AVATAR_URI}" alt="Profile"></div>
+      <div class="profile-name">${esc(profileData.name)}</div>
+      <div class="profile-handle">${esc(profileData.email || '')}</div>
+      <div class="profile-bio">${esc(profileData.bio)}</div>
+      <div class="profile-joined">Joined ${esc(profileData.joined)}</div>`;
+  }
+}
+
+function startEditProfile() {
+  profileEditing = true;
+  renderProfileHeader();
+  byId('pe-name')?.focus();
+}
+function cancelEditProfile() {
+  profileEditing = false;
+  renderProfileHeader();
+}
+function saveEditProfile() {
+  const name = byId('pe-name')?.value.trim();
+  const bio  = byId('pe-bio')?.value.trim();
+  if (name) profileData.name = name;
+  if (bio !== undefined) profileData.bio = bio;
+  profileEditing = false;
+  renderProfileHeader();
+  setAvatars();
+  showToast('Profile updated');
+}
+
+function handlePicChange(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    profileData.avatar = ev.target.result;
+    // Update preview immediately without re-rendering whole form
+    const img = byId('profile-pic-edit-img');
+    if (img) img.src = profileData.avatar;
+    e.target.value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
 function renderProfileStats() {
+  renderProfileHeader();
   const el = byId('profile-stats');
   if (!el) return;
   const favCount = entries.filter(e => e.favorited).length;
@@ -1148,22 +1569,49 @@ function renderLibrary() {
   if (countEl) countEl.textContent = allMedia.length ? `${allMedia.length} photo${allMedia.length > 1 ? 's' : ''}` : '';
 
   const wrap = byId('media-grid-wrap');
-  if (!wrap) return;
-  if (!allMedia.length) {
-    wrap.innerHTML = `
-      <div class="media-empty">
-        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-        <div class="media-empty-title">No photos yet</div>
-        <div class="media-empty-sub">Attach photos to your entries and they'll all appear here in a grid.</div>
+  if (wrap) {
+    if (!allMedia.length) {
+      wrap.innerHTML = `
+        <div class="media-empty">
+          <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+          <div class="media-empty-title">No photos yet</div>
+          <div class="media-empty-sub">Attach photos to your entries and they'll all appear here in a grid.</div>
+        </div>`;
+    } else {
+      wrap.innerHTML = `<div class="media-grid">
+        ${allMedia.map(m => `
+          <div class="media-cell" onclick="openOverlay(${m.ei},${m.ai})">
+            <img src="${m.src}" alt="">
+          </div>`).join('')}
       </div>`;
-    return;
+    }
   }
-  wrap.innerHTML = `<div class="media-grid">
-    ${allMedia.map(m => `
-      <div class="media-cell" onclick="openOverlay(${m.ei},${m.ai})">
-        <img src="${m.src}" alt="">
-      </div>`).join('')}
-  </div>`;
+
+  // ── Hashtag chips ──────────────────────────
+  const tagMap = {};
+  entries.forEach(e => {
+    const matches = e.text.match(/#(\w+)/g) || [];
+    matches.forEach(t => {
+      const key = t.slice(1).toLowerCase();
+      tagMap[key] = (tagMap[key] || 0) + 1;
+    });
+  });
+  const tags = Object.entries(tagMap).sort((a, b) => b[1] - a[1]);
+
+  const hashCountEl = byId('hashtag-count');
+  if (hashCountEl) hashCountEl.textContent = tags.length ? `${tags.length} tag${tags.length > 1 ? 's' : ''}` : '';
+
+  const chipsWrap = byId('hashtag-chips-wrap');
+  if (!chipsWrap) return;
+  if (!tags.length) {
+    chipsWrap.innerHTML = `<div class="hashtag-empty">No hashtags yet. Add #tags to your entries to organize them.</div>`;
+  } else {
+    chipsWrap.innerHTML = `<div class="hashtag-chips">
+      ${tags.map(([tag, count]) =>
+        `<button class="hashtag-chip" onclick="filterByTag('${tag}')">#${tag}<span class="hc-count">${count}</span></button>`
+      ).join('')}
+    </div>`;
+  }
 }
 
 function renderAll() {
@@ -1230,9 +1678,21 @@ function toggleFav(idx) {
 }
 
 function addAttach(idx) {
-  if (entries[idx].attachments.length >= 2) return;
+  if (entries[idx].attachments.length >= 1) return;
   attachTarget = idx;
   byId('attach-input').click();
+}
+
+function addComposePhoto() {
+  attachTarget = 'compose';
+  byId('attach-input').click();
+}
+
+function removeComposePhoto() {
+  composeAttachment = null;
+  byId('compose-preview').style.display = 'none';
+  byId('compose-preview-img').src = '';
+  byId('compose-photo-btn').disabled = false;
 }
 
 function handleAttach(e) {
@@ -1240,8 +1700,15 @@ function handleAttach(e) {
   if (!file || attachTarget === null) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    entries[attachTarget].attachments.push(ev.target.result);
-    renderAll();
+    if (attachTarget === 'compose') {
+      composeAttachment = ev.target.result;
+      byId('compose-preview-img').src = composeAttachment;
+      byId('compose-preview').style.display = 'block';
+      byId('compose-photo-btn').disabled = true;
+    } else {
+      entries[attachTarget].attachments.push(ev.target.result);
+      renderAll();
+    }
     e.target.value = '';
     attachTarget = null;
   };
@@ -1281,9 +1748,14 @@ function post() {
     ta.addEventListener('animationend', () => ta.style.animation = '', { once:true });
     return;
   }
-  entries.unshift(mkEntry(text, new Date()));
+  const attachments = composeAttachment ? [composeAttachment] : [];
+  entries.unshift(mkEntry(text, new Date(), { attachments }));
   ta.value = '';
   onInput();
+  composeAttachment = null;
+  byId('compose-preview').style.display = 'none';
+  byId('compose-preview-img').src = '';
+  byId('compose-photo-btn').disabled = false;
   renderAll();
   showToast('Posted');
   byId('body').scrollTop = 0;
@@ -1314,11 +1786,82 @@ function selectMonth(m) {
   renderMonthGrid();
   renderSearch();
 }
+function filterByTag(tag) {
+  switchView('search');
+  const input = byId('search-input');
+  input.value = '#' + tag;
+  byId('search-clear').style.display = 'block';
+  searchMonth = null;
+  renderMonthGrid();
+  renderSearch();
+}
+
+// ── Profile quick-menu ─────────────────────────────────
+function toggleProfileMenu(e) {
+  e.stopPropagation();
+  const menu = byId('profile-menu');
+  const isOpen = menu.classList.contains('open');
+  // Update entry count badge
+  const badge = byId('pm-count');
+  if (badge) badge.textContent = entries.length ? entries.length : '';
+  // Update dark mode label
+  const lbl = byId('pm-dark-label');
+  if (lbl) lbl.textContent = darkMode ? 'Light Mode' : 'Dark Mode';
+  // Set avatar + sync name/handle
+  const pmAv = byId('pm-avatar');
+  if (pmAv) pmAv.src = AVATAR_URI;
+  const pmN = byId('pm-name-text');
+  if (pmN) pmN.textContent = profileData.name;
+  const pmH = byId('pm-handle-text');
+  if (pmH) pmH.textContent = profileData.email;
+  menu.classList.toggle('open', !isOpen);
+}
+function closeProfileMenu() {
+  byId('profile-menu').classList.remove('open');
+}
+// Close profile menu on outside click
+document.addEventListener('click', () => {
+  closeProfileMenu();
+});
 
 // ── Profile ────────────────────────────────────────────
 function toggleDark() {
   darkMode = !darkMode;
   byId('phone').classList.toggle('dark', darkMode);
+}
+
+// ── Reminder ───────────────────────────────────────────
+let reminderOn = true;
+
+function fmt12(val) {
+  const [h, m] = val.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12  = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function updateReminderSub() {
+  const val = byId('reminder-time')?.value || '21:00';
+  const sub = byId('reminder-sub');
+  if (sub) sub.textContent = reminderOn
+    ? `Remind me every day at ${fmt12(val)}`
+    : 'Reminder is off';
+}
+
+function toggleReminder(e) {
+  const toggle = byId('reminder-toggle');
+  const row    = byId('reminder-time-row');
+  if (!toggle) return;
+  reminderOn = !reminderOn;
+  toggle.classList.toggle('tog-on', reminderOn);
+  row.classList.toggle('visible', reminderOn);
+  updateReminderSub();
+}
+
+function onReminderTimeChange() {
+  updateReminderSub();
+  const val = byId('reminder-time')?.value || '21:00';
+  showToast(`Reminder set for ${fmt12(val)}`);
 }
 
 // ── Nav ────────────────────────────────────────────────
@@ -1351,10 +1894,88 @@ function tick() {
 tick();
 setInterval(tick, 30000);
 
+// ── Auth ───────────────────────────────────────────────
+let authMode = 'login'; // 'login' | 'signup'
+
+// Simulated credential store (in-memory)
+const users = [{ email: 'demo@journal.app', password: 'demo123', name: 'Alex Chen' }];
+
+function switchAuthTab(mode) {
+  authMode = mode;
+  byId('tab-login').classList.toggle('active', mode === 'login');
+  byId('tab-signup').classList.toggle('active', mode === 'signup');
+  byId('auth-signup-name').style.display = mode === 'signup' ? 'flex' : 'none';
+  byId('auth-submit-btn').textContent = mode === 'login' ? 'Sign In' : 'Create Account';
+  byId('auth-password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
+  setAuthError('');
+}
+
+function setAuthError(msg) {
+  const el = byId('auth-error');
+  el.textContent = msg;
+  el.classList.toggle('visible', !!msg);
+}
+
+function submitAuth() {
+  const email    = byId('auth-email').value.trim().toLowerCase();
+  const password = byId('auth-password').value;
+  const name     = byId('auth-name')?.value.trim();
+
+  if (!email)    return setAuthError('Please enter your email.');
+  if (!password) return setAuthError('Please enter your password.');
+
+  if (authMode === 'signup') {
+    if (!name)             return setAuthError('Please enter your name.');
+    if (password.length < 6) return setAuthError('Password must be at least 6 characters.');
+    if (users.find(u => u.email === email)) return setAuthError('An account with this email already exists.');
+    users.push({ email, password, name });
+    profileData.name  = name;
+    profileData.email = email;
+  } else {
+    const user = users.find(u => u.email === email && u.password === password);
+    if (!user) return setAuthError('Incorrect email or password.');
+    profileData.name  = user.name;
+    profileData.email = user.email;
+  }
+
+  launchApp();
+}
+
+function signInWithGoogle() {
+  // Simulated Google sign-in
+  profileData.name  = 'Alex Chen';
+  profileData.email = 'alex@gmail.com';
+  launchApp();
+}
+
+function launchApp() {
+  setAuthError('');
+  byId('auth-screen').classList.remove('active');
+  const shell = byId('app-shell');
+  shell.style.display = 'flex';
+  shell.style.flexDirection = 'column';
+  shell.style.flex = '1';
+  shell.style.overflow = 'hidden';
+  shell.style.minHeight = '0';
+  byId('year-label').textContent = searchYear;
+  byId('reminder-time-row').classList.add('visible');
+  setAvatars();
+  renderAll();
+  switchView('home');
+}
+
+function signOut() {
+  byId('app-shell').style.display = 'none';
+  byId('auth-screen').classList.add('active');
+  // Reset auth form
+  byId('auth-email').value = '';
+  byId('auth-password').value = '';
+  if (byId('auth-name')) byId('auth-name').value = '';
+  switchAuthTab('login');
+}
+
 // ── Boot ───────────────────────────────────────────────
-byId('year-label').textContent = searchYear;
-setAvatars();
-renderAll();
+// Start on auth screen (app-shell hidden by default)
 </script>
 </body>
 </html>
