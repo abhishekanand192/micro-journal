@@ -1327,10 +1327,11 @@ function renderText(s) {
 }
 function fmtTime(d) {
   const now = new Date(), diff = Math.floor((now - d) / 1000);
+  if (diff <= 0)    return 'just now';
   if (diff < 60)    return diff + 's';
   if (diff < 3600)  return Math.floor(diff / 60) + 'm';
   if (diff < 86400) return Math.floor(diff / 3600) + 'h';
-  const o = { month:'short', day:'numeric' };
+  const o = { weekday:'short', month:'short', day:'numeric' };
   if (d.getFullYear() !== now.getFullYear()) o.year = 'numeric';
   return d.toLocaleDateString('en-US', o);
 }
