@@ -779,14 +779,16 @@
 
     /* ── Shared: remove phone shell on non-desktop ── */
     @media (max-width: 900px) {
-      html, body { background: var(--bg); }
+      html, body { background: var(--bg); height: 100%; overflow: hidden; }
       .phone {
         width: 100%;
-        min-height: 100vh;
-        min-height: 100svh; /* respects mobile browser chrome */
+        height: 100vh;
+        height: 100svh; /* respects mobile browser chrome */
+        min-height: unset;
         margin: 0;
         border-radius: 0;
         box-shadow: none;
+        overflow: hidden;
       }
       /* Hide fake status bar — real device has its own */
       .statusbar { display: none; }
@@ -1961,6 +1963,8 @@ function signInWithGoogle() {
 
 function launchApp() {
   setAuthError('');
+  // Persist session so the app reopens without asking for login again
+  localStorage.setItem('mj_session', JSON.stringify({ name: profileData.name, email: profileData.email }));
   byId('auth-screen').classList.remove('active');
   const shell = byId('app-shell');
   shell.style.display = 'flex';
@@ -1976,6 +1980,7 @@ function launchApp() {
 }
 
 function signOut() {
+  localStorage.removeItem('mj_session');
   byId('app-shell').style.display = 'none';
   byId('auth-screen').classList.add('active');
   // Reset auth form
@@ -1986,7 +1991,17 @@ function signOut() {
 }
 
 // ── Boot ───────────────────────────────────────────────
-// Start on auth screen (app-shell hidden by default)
+// Auto-login if a saved session exists
+(function() {
+  try {
+    const s = JSON.parse(localStorage.getItem('mj_session') || 'null');
+    if (s && s.name) {
+      profileData.name  = s.name;
+      profileData.email = s.email || '';
+      launchApp();
+    }
+  } catch(e) { localStorage.removeItem('mj_session'); }
+})();
 
 // ── Service Worker ─────────────────────────────────────
 if ('serviceWorker' in navigator) {
