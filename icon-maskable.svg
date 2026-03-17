@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Full bleed background for maskable (no rounded corners — OS applies the mask) -->
+  <rect width="512" height="512" fill="#1d9bf0"/>
+  <!-- Icon centred within the safe zone (inner ~72% = ~184px padding each side) -->
+  <path d="M176 320 L304 192 l56 56 L232 376 L168 384 Z" fill="#ffffff"/>
+  <path d="M304 192 l28-28 a20 20 0 0 1 28 28 l-28 28 Z" fill="#ffffff"/>
+</svg>
