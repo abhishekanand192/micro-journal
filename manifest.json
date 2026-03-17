@@ -2,7 +2,7 @@
   "name": "Micro-Journal",
   "short_name": "Journal",
   "description": "Your private space for daily moments",
-  "start_url": "./micro-journal.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1d9bf0",

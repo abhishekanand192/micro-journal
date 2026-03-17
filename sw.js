@@ -1,6 +1,6 @@
-const CACHE = 'micro-journal-v1';
+const CACHE = 'micro-journal-v2';
 const ASSETS = [
-  './micro-journal.html',
+  './index.html',
   './manifest.json',
   './icon.svg',
   './icon-maskable.svg'
