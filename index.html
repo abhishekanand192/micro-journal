@@ -39,7 +39,7 @@
 
     /* ── Phone ────────────────────────────────── */
     .phone {
-      width: 390px; min-height: 844px;
+      width: 390px; height: min(844px, calc(100vh - 64px));
       margin: 32px auto;
       background: var(--bg);
       border-radius: 44px;
@@ -218,7 +218,7 @@
     .entry-name  { font-size: 15px; font-weight: 700; color: var(--text); }
     .entry-handle, .entry-dot, .entry-time { font-size: 14px; color: var(--sub); }
     .entry-body-text {
-      font-size: 15px; line-height: 1.55;
+      font-size: 16px; line-height: 1.55;
       color: var(--text); word-break: break-word;
     }
 
@@ -513,16 +513,6 @@
     .toggle.tog-on::after,
     .phone.dark .toggle.dark-toggle::after { transform: translateX(18px); }
 
-    /* Logout */
-    .logout-btn {
-      display: block; width: calc(100% - 32px); margin: 16px;
-      padding: 14px; border: 1.5px solid var(--border); border-radius: 12px;
-      background: none; font-size: 15px; font-weight: 600;
-      color: var(--red); cursor: pointer; font-family: inherit;
-      transition: background 0.12s;
-    }
-    .logout-btn:hover { background: rgba(244,33,46,0.06); }
-
     /* ── Reminder time picker ─────────────────── */
     .reminder-time-row {
       margin-top: 8px;
@@ -536,89 +526,6 @@
       cursor: pointer; transition: border-color 0.15s;
     }
     .reminder-time-input:focus { border-color: var(--blue); background: var(--bg); }
-
-    /* ── Auth screen ──────────────────────────── */
-    .auth-screen {
-      display: none; flex-direction: column;
-      flex: 1; overflow-y: auto; scrollbar-width: none;
-      padding: 0 28px 32px;
-      background: var(--bg);
-    }
-    .auth-screen::-webkit-scrollbar { display: none; }
-    .auth-screen.active { display: flex; }
-
-    .auth-logo {
-      display: flex; flex-direction: column; align-items: center;
-      padding: 44px 0 32px;
-    }
-    .auth-logo-mark {
-      width: 58px; height: 58px; border-radius: 18px;
-      background: var(--blue); display: flex; align-items: center;
-      justify-content: center; margin-bottom: 14px;
-      box-shadow: 0 6px 20px rgba(29,155,240,0.35);
-    }
-    .auth-logo-mark svg { width: 30px; height: 30px; fill: #fff; }
-    .auth-app-name  { font-size: 22px; font-weight: 800; color: var(--text); }
-    .auth-app-sub   { font-size: 14px; color: var(--sub); margin-top: 4px; }
-
-    .auth-tabs {
-      display: flex; border: 1.5px solid var(--border);
-      border-radius: 12px; overflow: hidden; margin-bottom: 24px;
-    }
-    .auth-tab {
-      flex: 1; padding: 10px; text-align: center;
-      font-size: 14px; font-weight: 700; cursor: pointer;
-      color: var(--sub); background: none; border: none;
-      font-family: inherit; transition: background 0.15s, color 0.15s;
-    }
-    .auth-tab.active { background: var(--blue); color: #fff; }
-
-    .auth-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .auth-label { font-size: 12px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 0.6px; }
-    .auth-input {
-      border: 1.5px solid var(--border); border-radius: 12px;
-      padding: 12px 14px; font-size: 16px; font-family: inherit;
-      color: var(--text); background: var(--bg-dim); outline: none;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .auth-input:focus { border-color: var(--blue); background: var(--bg); }
-
-    .auth-btn {
-      width: 100%; padding: 14px; border-radius: 12px;
-      border: none; background: var(--blue); color: #fff;
-      font-size: 16px; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: background 0.15s;
-      margin-top: 4px;
-    }
-    .auth-btn:hover { background: var(--blue-dk); }
-
-    .auth-divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 20px 0;
-    }
-    .auth-divider::before, .auth-divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-    .auth-divider span { font-size: 12px; color: var(--muted); font-weight: 600; }
-
-    .auth-google-btn {
-      width: 100%; padding: 13px 14px; border-radius: 12px;
-      border: 1.5px solid var(--border); background: var(--bg);
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      font-size: 15px; font-weight: 600; cursor: pointer;
-      font-family: inherit; color: var(--text);
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .auth-google-btn:hover { background: var(--bg-dim); border-color: var(--sub); }
-    .auth-google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
-
-    .auth-error {
-      background: rgba(244,33,46,0.08); border: 1px solid rgba(244,33,46,0.25);
-      border-radius: 10px; padding: 10px 14px;
-      font-size: 13px; color: var(--red); margin-bottom: 14px;
-      display: none;
-    }
-    .auth-error.visible { display: block; }
 
     /* ── Profile features divider ─────────────── */
     .profile-features-divider {
@@ -760,6 +667,43 @@
     .feat-icon svg  { width: 18px; height: 18px; fill: #fff; }
     .feat-title     { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
     .feat-desc      { font-size: 12px; color: var(--sub); line-height: 1.45; }
+
+    /* ── Login Screen ─────────────────────────── */
+    .login-screen {
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      flex: 1; padding: 40px 28px;
+      background: var(--bg);
+    }
+    .login-screen.active { display: flex; }
+    .login-logo {
+      width: 68px; height: 68px; background: var(--blue);
+      border-radius: 22px; display: flex;
+      align-items: center; justify-content: center;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 24px rgba(29,155,240,0.35);
+    }
+    .login-logo svg { width: 34px; height: 34px; fill: #fff; }
+    .login-title { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .login-sub   { font-size: 15px; color: var(--sub); margin-bottom: 36px; text-align: center; line-height: 1.55; }
+    .login-field { width: 100%; margin-bottom: 14px; }
+    .login-label { font-size: 11px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 6px; }
+    .login-input {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 13px 16px; font-size: 16px; font-family: inherit;
+      color: var(--text); background: var(--bg-dim); outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .login-input:focus { border-color: var(--blue); background: var(--bg); }
+    .login-btn {
+      width: 100%; background: var(--blue); color: #fff;
+      border: none; border-radius: 9999px;
+      padding: 14px; font-size: 16px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: background 0.15s; margin-top: 6px;
+    }
+    .login-btn:hover { background: var(--blue-dk); }
+    .login-btn:disabled { opacity: 0.4; cursor: default; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
@@ -908,46 +852,20 @@
 
 <div class="phone" id="phone">
 
-  <!-- ── Auth screen ─────────────────────────── -->
-  <div class="auth-screen active" id="auth-screen">
-    <div class="auth-logo">
-      <div class="auth-logo-mark">
-        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-      </div>
-      <div class="auth-app-name">Micro-Journal</div>
-      <div class="auth-app-sub">Your private space for daily moments</div>
+  <!-- ── Login Screen ───────────────────────── -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
     </div>
-
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
-      <button class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+    <div class="login-title">Micro-Journal</div>
+    <div class="login-sub">Your private space for daily moments.<br>Just tell us your name to get started.</div>
+    <div class="login-field">
+      <label class="login-label" for="login-name">Your name</label>
+      <input class="login-input" id="login-name" type="text" placeholder="e.g. Alex Chen" maxlength="40"
+        oninput="byId('login-submit').disabled = !this.value.trim()"
+        onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-
-    <div id="auth-error" class="auth-error"></div>
-
-    <div id="auth-signup-name" class="auth-field" style="display:none">
-      <div class="auth-label">Your Name</div>
-      <input class="auth-input" id="auth-name" type="text" placeholder="Alex Chen" autocomplete="name">
-    </div>
-
-    <div class="auth-field">
-      <div class="auth-label">Email</div>
-      <input class="auth-input" id="auth-email" type="email" placeholder="you@example.com" autocomplete="email">
-    </div>
-
-    <div class="auth-field">
-      <div class="auth-label">Password</div>
-      <input class="auth-input" id="auth-password" type="password" placeholder="••••••••" autocomplete="current-password">
-    </div>
-
-    <button class="auth-btn" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
-
-    <div class="auth-divider"><span>or</span></div>
-
-    <button class="auth-google-btn" onclick="signInWithGoogle()">
-      <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-3.59-13.46-8.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-      Continue with Google
-    </button>
+    <button class="login-btn" id="login-submit" onclick="doLogin()" disabled>Get Started</button>
   </div>
 
   <!-- ── App shell ────────────────────────────── -->
@@ -998,8 +916,8 @@
           Profile &amp; Settings
         </button>
         <div class="pm-divider"></div>
-        <button class="pm-item pm-danger" onclick="closeProfileMenu();signOut()">
-          <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+        <button class="pm-item pm-danger" onclick="signOut()">
+          <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
           Sign Out
         </button>
       </div>
@@ -1202,7 +1120,6 @@
         </div>
       </div>
 
-      <button class="logout-btn" onclick="signOut()">Sign Out</button>
 
     </div><!-- /view-profile -->
 
@@ -1285,10 +1202,10 @@ let searchMonth       = null;
 let darkMode          = false;
 
 const profileData = {
-  name:   'Alex Chen',
+  name:   '',
   email:  '',
   bio:    'Finding joy in the small moments, one entry at a time.',
-  joined: 'March 2024',
+  joined: '',
 };
 let profileEditing = false;
 
@@ -1304,20 +1221,116 @@ function mkEntry(text, ts, opts = {}) {
     editing:     false,
   };
 }
-function ago(days, hour) {
-  const d = new Date();
-  d.setDate(d.getDate() - days);
-  d.setHours(hour, 0, 0, 0);
-  return d;
+
+const entries = [];
+
+// ── localStorage persistence ───────────────────────────
+const STORE = {
+  AUTH:     'mj_auth',
+  ENTRIES:  'mj_entries',
+  PROFILE:  'mj_profile',
+  SETTINGS: 'mj_settings',
+};
+
+function saveEntries() {
+  try {
+    const data = entries.map(e => ({
+      id:          e.id,
+      text:        e.text,
+      ts:          e.ts.toISOString(),
+      favorited:   e.favorited,
+      comments:    e.comments.map(c => ({ text: c.text, ts: c.ts.toISOString() })),
+      attachments: e.attachments,
+    }));
+    localStorage.setItem(STORE.ENTRIES, JSON.stringify(data));
+  } catch(err) {}
 }
 
-const entries = [
-  mkEntry("That first sip of #coffee while the house was still quiet. Pure bliss.",          ago(0,14)),
-  mkEntry("My dog did that thing where she tilts her head trying to understand me. Melted. #pets #joy", ago(1, 9), { favorited:true }),
-  mkEntry("Nailed the presentation at work. Three months of prep, twenty minutes, no slip. #work #proud", ago(2,11)),
-  mkEntry("Made ramen from scratch. Six hours of effort, zero regrets. #cooking #food",      ago(3,19)),
-  mkEntry("Evening walk in the park. The leaves were golden and the light was exactly right. #nature #joy", ago(4,17), { favorited:true }),
-];
+function loadEntriesFromStore() {
+  try {
+    const raw = localStorage.getItem(STORE.ENTRIES);
+    if (!raw) return [];
+    return JSON.parse(raw).map(d => ({
+      id:          d.id,
+      text:        d.text,
+      ts:          new Date(d.ts),
+      favorited:   d.favorited || false,
+      comments:    (d.comments || []).map(c => ({ text: c.text, ts: new Date(c.ts) })),
+      attachments: d.attachments || [],
+      commentOpen: false,
+      editing:     false,
+    }));
+  } catch(err) { return []; }
+}
+
+function saveProfile() {
+  try { localStorage.setItem(STORE.PROFILE, JSON.stringify(profileData)); } catch(err) {}
+}
+
+function loadProfileFromStore() {
+  try {
+    const raw = localStorage.getItem(STORE.PROFILE);
+    return raw ? JSON.parse(raw) : null;
+  } catch(err) { return null; }
+}
+
+function saveSettings() {
+  try { localStorage.setItem(STORE.SETTINGS, JSON.stringify({ darkMode })); } catch(err) {}
+}
+
+function loadSettingsFromStore() {
+  try {
+    const raw = localStorage.getItem(STORE.SETTINGS);
+    return raw ? JSON.parse(raw) : null;
+  } catch(err) { return null; }
+}
+
+function getAuth() {
+  try {
+    const raw = localStorage.getItem(STORE.AUTH);
+    return raw ? JSON.parse(raw) : null;
+  } catch(err) { return null; }
+}
+
+function setAuth(data) {
+  try { localStorage.setItem(STORE.AUTH, JSON.stringify(data)); } catch(err) {}
+}
+
+// ── Auth flow ──────────────────────────────────────────
+function showLogin() {
+  byId('login-screen').classList.add('active');
+  byId('app-shell').style.display = 'none';
+}
+
+function showApp() {
+  byId('login-screen').classList.remove('active');
+  byId('app-shell').style.display = 'flex';
+  setAvatars();
+  renderAll();
+  switchView('home');
+}
+
+function doLogin() {
+  const name = byId('login-name').value.trim();
+  if (!name) return;
+  profileData.name = name;
+  profileData.joined = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  setAuth({ loggedIn: true, name });
+  saveProfile();
+  showApp();
+}
+
+function signOut() {
+  closeProfileMenu();
+  localStorage.removeItem(STORE.AUTH);
+  entries.length = 0;
+  Object.assign(profileData, { name:'', email:'', bio:'Finding joy in the small moments, one entry at a time.', avatar: undefined, joined:'' });
+  darkMode = false;
+  byId('phone').classList.remove('dark');
+  const nameInput = byId('login-name');
+  if (nameInput) { nameInput.value = ''; byId('login-submit').disabled = true; }
+  showLogin();
+}
 
 // ── Helpers ────────────────────────────────────────────
 function esc(s) {
@@ -1542,6 +1555,7 @@ function saveEditProfile() {
   if (name) profileData.name = name;
   if (bio !== undefined) profileData.bio = bio;
   profileEditing = false;
+  saveProfile();
   renderProfileHeader();
   setAvatars();
   showToast('Profile updated');
@@ -1553,6 +1567,7 @@ function handlePicChange(e) {
   const reader = new FileReader();
   reader.onload = ev => {
     profileData.avatar = ev.target.result;
+    saveProfile();
     // Update preview immediately without re-rendering whole form
     const img = byId('profile-pic-edit-img');
     if (img) img.src = profileData.avatar;
@@ -1654,6 +1669,7 @@ function saveEdit(idx) {
   const text = ta.value.trim();
   if (text) entries[idx].text = text;
   entries[idx].editing = false;
+  saveEntries();
   renderAll();
 }
 
@@ -1665,6 +1681,7 @@ function cancelEdit(idx) {
 function deleteEntry(idx) {
   openMenu = null;
   entries.splice(idx, 1);
+  saveEntries();
   renderAll();
   showToast('Entry deleted');
 }
@@ -1681,11 +1698,13 @@ function submitCmt(idx) {
   const text = input.value.trim();
   if (!text) return;
   entries[idx].comments.push({ text, ts: new Date() });
+  saveEntries();
   renderAll();
 }
 
 function toggleFav(idx) {
   entries[idx].favorited = !entries[idx].favorited;
+  saveEntries();
   renderAll();
   showToast(entries[idx].favorited ? 'Added to favorites' : 'Removed from favorites');
 }
@@ -1720,6 +1739,7 @@ function handleAttach(e) {
       byId('compose-photo-btn').disabled = true;
     } else {
       entries[attachTarget].attachments.push(ev.target.result);
+      saveEntries();
       renderAll();
     }
     e.target.value = '';
@@ -1763,6 +1783,7 @@ function post() {
   }
   const attachments = composeAttachment ? [composeAttachment] : [];
   entries.unshift(mkEntry(text, new Date(), { attachments }));
+  saveEntries();
   ta.value = '';
   onInput();
   composeAttachment = null;
@@ -1841,6 +1862,8 @@ document.addEventListener('click', () => {
 function toggleDark() {
   darkMode = !darkMode;
   byId('phone').classList.toggle('dark', darkMode);
+  byId('dark-toggle')?.classList.toggle('tog-on', darkMode);
+  saveSettings();
 }
 
 // ── Reminder ───────────────────────────────────────────
@@ -1907,100 +1930,36 @@ function tick() {
 tick();
 setInterval(tick, 30000);
 
-// ── Auth ───────────────────────────────────────────────
-let authMode = 'login'; // 'login' | 'signup'
-
-// Simulated credential store (in-memory)
-const users = [{ email: 'demo@journal.app', password: 'demo123', name: 'Alex Chen' }];
-
-function switchAuthTab(mode) {
-  authMode = mode;
-  byId('tab-login').classList.toggle('active', mode === 'login');
-  byId('tab-signup').classList.toggle('active', mode === 'signup');
-  byId('auth-signup-name').style.display = mode === 'signup' ? 'flex' : 'none';
-  byId('auth-submit-btn').textContent = mode === 'login' ? 'Sign In' : 'Create Account';
-  byId('auth-password').autocomplete = mode === 'login' ? 'current-password' : 'new-password';
-  setAuthError('');
-}
-
-function setAuthError(msg) {
-  const el = byId('auth-error');
-  el.textContent = msg;
-  el.classList.toggle('visible', !!msg);
-}
-
-function submitAuth() {
-  const email    = byId('auth-email').value.trim().toLowerCase();
-  const password = byId('auth-password').value;
-  const name     = byId('auth-name')?.value.trim();
-
-  if (!email)    return setAuthError('Please enter your email.');
-  if (!password) return setAuthError('Please enter your password.');
-
-  if (authMode === 'signup') {
-    if (!name)             return setAuthError('Please enter your name.');
-    if (password.length < 6) return setAuthError('Password must be at least 6 characters.');
-    if (users.find(u => u.email === email)) return setAuthError('An account with this email already exists.');
-    users.push({ email, password, name });
-    profileData.name  = name;
-    profileData.email = email;
-  } else {
-    const user = users.find(u => u.email === email && u.password === password);
-    if (!user) return setAuthError('Incorrect email or password.');
-    profileData.name  = user.name;
-    profileData.email = user.email;
-  }
-
-  launchApp();
-}
-
-function signInWithGoogle() {
-  // Simulated Google sign-in
-  profileData.name  = 'Alex Chen';
-  profileData.email = 'alex@gmail.com';
-  launchApp();
-}
-
-function launchApp() {
-  setAuthError('');
-  // Persist session so the app reopens without asking for login again
-  localStorage.setItem('mj_session', JSON.stringify({ name: profileData.name, email: profileData.email }));
-  byId('auth-screen').classList.remove('active');
-  const shell = byId('app-shell');
-  shell.style.display = 'flex';
-  shell.style.flexDirection = 'column';
-  shell.style.flex = '1';
-  shell.style.overflow = 'hidden';
-  shell.style.minHeight = '0';
+// ── Boot ───────────────────────────────────────────────
+(function() {
   byId('year-label').textContent = searchYear;
   byId('reminder-time-row').classList.add('visible');
-  setAvatars();
-  renderAll();
-  switchView('home');
-}
 
-function signOut() {
-  localStorage.removeItem('mj_session');
-  byId('app-shell').style.display = 'none';
-  byId('auth-screen').classList.add('active');
-  // Reset auth form
-  byId('auth-email').value = '';
-  byId('auth-password').value = '';
-  if (byId('auth-name')) byId('auth-name').value = '';
-  switchAuthTab('login');
-}
+  // Restore settings (dark mode)
+  const settings = loadSettingsFromStore();
+  if (settings) {
+    darkMode = settings.darkMode || false;
+    byId('phone').classList.toggle('dark', darkMode);
+    byId('dark-toggle')?.classList.toggle('tog-on', darkMode);
+  }
 
-// ── Boot ───────────────────────────────────────────────
-// Auto-login if a saved session exists
-(function() {
-  try {
-    const s = JSON.parse(localStorage.getItem('mj_session') || 'null');
-    if (s && s.name) {
-      profileData.name  = s.name;
-      profileData.email = s.email || '';
-      launchApp();
-    }
-  } catch(e) { localStorage.removeItem('mj_session'); }
+  // Check auth
+  const auth = getAuth();
+  if (auth && auth.loggedIn) {
+    // Restore profile
+    const savedProfile = loadProfileFromStore();
+    if (savedProfile) Object.assign(profileData, savedProfile);
+    else profileData.name = auth.name || '';
+
+    // Restore entries
+    const saved = loadEntriesFromStore();
+    entries.push(...saved);
+    if (entries.length) _uid = Math.max(...entries.map(e => e.id)) + 1;
+
+    showApp();
+  } else {
+    showLogin();
+  }
 })();
 
 // ── Service Worker ─────────────────────────────────────
